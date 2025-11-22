@@ -2,13 +2,15 @@
 
 import { useState, useEffect } from "react"
 import { Navigation } from "@/components/navigation"
-import { AddSavingsPanel } from "@/components/add-savings-panel"
+import { BottomNav } from "@/components/bottom-nav"
+import { AddSavingsForm } from "@/components/add-savings-form"
 import { SavingsSummaryCards } from "@/components/savings-summary"
 import { SavingsList } from "@/components/savings-list"
 import type { SavingsEntry, SavingsSummary } from "@/lib/types"
 
 export default function Home() {
   const [entries, setEntries] = useState<SavingsEntry[]>([])
+  const [showAddPanel, setShowAddPanel] = useState(false)
   const [summary, setSummary] = useState<SavingsSummary>({
     totalSavings: 0,
     thisMonth: 0,
@@ -77,6 +79,7 @@ export default function Home() {
       id: Date.now().toString(),
     }
     setEntries([newEntry, ...entries])
+    setShowAddPanel(false)
   }
 
   const handleDeleteEntry = (id: string) => {
@@ -84,27 +87,49 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       <Navigation />
-      <main className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24">
-        <div className="space-y-8">
-          <div className="flex flex-col gap-2">
-            <h1 className="text-4xl font-bold tracking-tight">Your Financial Cushion</h1>
+
+      {/* Main Content - Floating above bottom nav */}
+      <main className="pt-32 pb-32 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto space-y-6">
+          {/* Welcome Section - Floating Card */}
+          <div className="bg-background/60 backdrop-blur-2xl border border-border/50 rounded-3xl px-8 py-6 shadow-lg">
+            <h1 className="text-4xl font-bold tracking-tight mb-2">Your Financial Cushion</h1>
             <p className="text-lg text-muted-foreground">
               Track your savings journey
             </p>
           </div>
 
-          <SavingsSummaryCards summary={summary} />
+          {/* Summary Cards - Floating */}
+          <div className="bg-background/60 backdrop-blur-2xl border border-border/50 rounded-3xl p-6 shadow-lg">
+            <SavingsSummaryCards summary={summary} />
+          </div>
 
-          <SavingsList entries={entries} onDelete={handleDeleteEntry} />
+          {/* Transactions List - Floating */}
+          <div className="bg-background/60 backdrop-blur-2xl border border-border/50 rounded-3xl p-6 shadow-lg">
+            <SavingsList entries={entries} onDelete={handleDeleteEntry} />
+          </div>
         </div>
       </main>
 
-      {/* Floating Action Button */}
-      <div className="fixed bottom-8 right-8 z-50">
-        <AddSavingsPanel onAdd={handleAddEntry} />
-      </div>
+      {/* Bottom Navigation */}
+      <BottomNav onAddClick={() => setShowAddPanel(true)} />
+
+      {/* Add Panel */}
+      {showAddPanel && (
+        <div className="fixed inset-0 z-[60]">
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowAddPanel(false)}
+          />
+          <div className="absolute inset-0 flex items-end sm:items-center justify-center p-4">
+            <div className="w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+              <AddSavingsForm onAdd={handleAddEntry} onClose={() => setShowAddPanel(false)} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

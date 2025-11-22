@@ -1,31 +1,24 @@
 "use client"
 
-import { PiggyBank, Wallet } from "lucide-react"
+import { Wallet } from "lucide-react"
 import { ThemeSwitcher } from "./theme-switcher"
 
 export function Navigation() {
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/70 shadow-sm">
-      <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex h-16 items-center justify-between">
-        <div className="flex items-center gap-2">
+    <header className="fixed top-0 left-0 right-0 z-40 pt-6 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex items-center justify-between bg-background/60 backdrop-blur-2xl border border-border/50 rounded-3xl px-6 py-4 shadow-lg">
           <div className="flex items-center gap-3 font-bold text-xl">
-            <div className="rounded-lg bg-primary p-2 shadow-md">
-              <Wallet className="h-5 w-5 text-primary-foreground" />
+            <div className="rounded-2xl bg-gradient-to-br from-primary to-primary/80 p-3 shadow-lg">
+              <Wallet className="h-6 w-6 text-primary-foreground" />
             </div>
-            <span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">Cushion</span>
+            <span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+              Cushion
+            </span>
           </div>
-        </div>
 
-        <nav className="flex items-center gap-6">
-          <a
-            href="#"
-            className="hidden sm:flex items-center gap-2 text-sm font-medium transition-all duration-200 hover:text-primary px-3 py-1.5 rounded-lg hover:bg-accent"
-          >
-            <PiggyBank className="h-4 w-4" />
-            Savings
-          </a>
           <ThemeSwitcher />
-        </nav>
+        </div>
       </div>
     </header>
   )
