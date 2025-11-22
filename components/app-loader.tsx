@@ -1,38 +1,44 @@
 "use client"
 
-import { Wallet } from "lucide-react"
+import { useEffect, useState } from "react"
 
 export function AppLoader() {
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/20">
-      <div className="flex flex-col items-center gap-6">
-        {/* Animated Wallet Icon */}
-        <div className="relative">
-          {/* Outer pulse rings */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="h-32 w-32 rounded-full bg-primary/20 animate-ping" style={{ animationDuration: '2s' }} />
-          </div>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="h-24 w-24 rounded-full bg-primary/30 animate-ping" style={{ animationDuration: '1.5s' }} />
-          </div>
+  const [progress, setProgress] = useState(0)
 
-          {/* Center icon */}
-          <div className="relative z-10 flex items-center justify-center">
-            <div className="rounded-3xl bg-gradient-to-br from-primary to-primary/80 p-6 shadow-2xl animate-bounce" style={{ animationDuration: '1s' }}>
-              <Wallet className="h-12 w-12 text-primary-foreground" />
-            </div>
-          </div>
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(timer)
+          return 100
+        }
+        return prev + 2
+      })
+    }, 15)
+
+    return () => clearInterval(timer)
+  }, [])
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background">
+      <div className="flex flex-col items-center gap-8 w-full max-w-xs px-8">
+        {/* App Name */}
+        <div className="space-y-2 text-center">
+          <h1 className="text-3xl font-bold tracking-tight">Cushion</h1>
+          <p className="text-sm text-muted-foreground">Financial tracking made simple</p>
         </div>
 
-        {/* Loading text */}
-        <div className="flex flex-col items-center gap-3">
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent animate-pulse">
-            Cushion
-          </h2>
-          <div className="flex gap-1.5">
-            <div className="h-2 w-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '0ms' }} />
-            <div className="h-2 w-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '150ms' }} />
-            <div className="h-2 w-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '300ms' }} />
+        {/* Progress Bar */}
+        <div className="w-full space-y-2">
+          <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
+            <div
+              className="h-full bg-primary transition-all duration-300 ease-out"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          <div className="flex justify-between text-xs text-muted-foreground">
+            <span>Loading</span>
+            <span>{progress}%</span>
           </div>
         </div>
       </div>

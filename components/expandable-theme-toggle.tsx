@@ -20,7 +20,7 @@ export function ExpandableThemeToggle() {
       onMouseLeave={() => setIsExpanded(false)}
       className="fixed bottom-4 right-4 z-50"
     >
-      <div className="bg-neutral-900/90 dark:bg-neutral-800/90 backdrop-blur-xl border border-neutral-700/50 rounded-full shadow-2xl px-2 py-2 transition-all duration-500 ease-in-out">
+      <div className="bg-neutral-100/80 dark:bg-neutral-900/80 backdrop-blur-2xl border border-neutral-200/50 dark:border-neutral-700/50 rounded-full shadow-2xl shadow-neutral-900/10 dark:shadow-black/40 px-2 py-2 transition-all duration-500 ease-in-out">
         <div className="flex items-center gap-1">
           <button
             onClick={() => setTheme('light')}

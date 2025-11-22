@@ -4,15 +4,15 @@
 
 @layer base {
   :root {
-    /* Light mode - Tailwind Neutral Palette */
+    /* Light mode - Tailwind Neutral Palette with Neon Green Accent */
     --background: 0 0% 100%; /* white */
     --foreground: 0 0% 9%; /* neutral-900 */
     --card: 0 0% 100%; /* white */
     --card-foreground: 0 0% 9%; /* neutral-900 */
     --popover: 0 0% 100%; /* white */
     --popover-foreground: 0 0% 9%; /* neutral-900 */
-    --primary: 0 0% 9%; /* neutral-900 */
-    --primary-foreground: 0 0% 98%; /* neutral-50 */
+    --primary: 142 90% 45%; /* neon green */
+    --primary-foreground: 0 0% 100%; /* white */
     --secondary: 0 0% 96%; /* neutral-100 */
     --secondary-foreground: 0 0% 9%; /* neutral-900 */
     --muted: 0 0% 96%; /* neutral-100 */
@@ -23,7 +23,7 @@
     --destructive-foreground: 0 0% 98%; /* neutral-50 */
     --border: 0 0% 90%; /* neutral-200 */
     --input: 0 0% 90%; /* neutral-200 */
-    --ring: 0 0% 9%; /* neutral-900 */
+    --ring: 142 90% 45%; /* neon green */
     --radius: 0.5rem;
     --chart-1: 142 76% 36%; /* emerald-600 */
     --chart-2: 221 83% 53%; /* blue-500 */
@@ -33,15 +33,15 @@
   }
 
   .dark {
-    /* Dark mode - Tailwind Neutral Palette */
+    /* Dark mode - Tailwind Neutral Palette with Neon Green Accent */
     --background: 0 0% 4%; /* neutral-950 */
     --foreground: 0 0% 98%; /* neutral-50 */
     --card: 0 0% 10%; /* neutral-900 */
     --card-foreground: 0 0% 98%; /* neutral-50 */
     --popover: 0 0% 10%; /* neutral-900 */
     --popover-foreground: 0 0% 98%; /* neutral-50 */
-    --primary: 0 0% 98%; /* neutral-50 */
-    --primary-foreground: 0 0% 9%; /* neutral-900 */
+    --primary: 142 95% 55%; /* neon green - brighter for dark mode */
+    --primary-foreground: 0 0% 0%; /* black */
     --secondary: 0 0% 15%; /* neutral-800 */
     --secondary-foreground: 0 0% 98%; /* neutral-50 */
     --muted: 0 0% 15%; /* neutral-800 */
@@ -52,7 +52,7 @@
     --destructive-foreground: 0 0% 98%; /* neutral-50 */
     --border: 0 0% 15%; /* neutral-800 */
     --input: 0 0% 15%; /* neutral-800 */
-    --ring: 0 0% 83%; /* neutral-300 */
+    --ring: 142 95% 55%; /* neon green */
     --chart-1: 142 71% 45%; /* emerald-500 */
     --chart-2: 217 91% 60%; /* blue-400 */
     --chart-3: 263 70% 50%; /* purple-400 */

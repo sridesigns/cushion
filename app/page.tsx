@@ -102,7 +102,7 @@ export default function Home() {
       {isInitialLoading && <AppLoader />}
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
         {/* Main Content */}
-        <main className="pt-6 pb-24 px-6 sm:px-8 lg:px-12">
+        <main className="pt-16 pb-24 px-6 sm:px-8 lg:px-12">
           <div className="max-w-5xl mx-auto space-y-12">
             {activeView === 'home' ? (
               <>
