@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useCurrency, currencyConfig } from "@/lib/currency-context"
+import { validateAmount, validateCategory, validateDescription, validateDate } from "@/lib/validation"
 import type { SavingsEntry } from "@/lib/types"
 
 interface AddSavingsFormProps {
@@ -31,11 +32,22 @@ export function AddSavingsForm({ onAdd, onClose }: AddSavingsFormProps) {
   const handleSubmit = () => {
     if (!amount || !category) return
 
+    // Validate all inputs
+    const validatedAmount = validateAmount(amount)
+    const validatedCategory = validateCategory(category)
+    const validatedDescription = validateDescription(description)
+    const validatedDate = validateDate(date)
+
+    if (!validatedAmount || !validatedCategory || !validatedDate) {
+      console.error('Invalid input data')
+      return
+    }
+
     onAdd({
-      amount: parseFloat(amount),
-      category,
-      description,
-      date,
+      amount: validatedAmount,
+      category: validatedCategory,
+      description: validatedDescription,
+      date: validatedDate,
       type,
     })
 

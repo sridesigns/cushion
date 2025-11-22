@@ -7,6 +7,8 @@
 export const STORAGE_KEYS = {
   SAVINGS_ENTRIES: 'savingsEntries',
   CURRENCY: 'currency',
+  NOTION_ACCESS_TOKEN: 'notion_access_token',
+  NOTION_DATABASE_ID: 'notion_database_id',
 } as const
 
 // Timing Constants (in milliseconds)

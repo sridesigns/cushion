@@ -2,13 +2,15 @@
 
 import { useState, useEffect } from "react"
 import { SplitBottomNav } from "@/components/split-bottom-nav"
-import { ExpandableThemeToggle } from "@/components/expandable-theme-toggle"
 import { AddSavingsForm } from "@/components/add-savings-form"
 import { SavingsSummaryCards } from "@/components/savings-summary"
 import { SavingsList } from "@/components/savings-list"
 import { SettingsView } from "@/components/settings-view"
 import { AppLoader } from "@/components/app-loader"
+import { AutoSync } from "@/components/auto-sync"
 import { CurrencyProvider } from "@/lib/currency-context"
+import { NotionProvider } from "@/lib/notion-context"
+import { STORAGE_KEYS } from "@/lib/constants"
 import type { SavingsEntry, SavingsSummary } from "@/lib/types"
 
 export default function Home() {
@@ -26,7 +28,7 @@ export default function Home() {
 
   // Load data from localStorage on mount
   useEffect(() => {
-    const savedEntries = localStorage.getItem('savingsEntries')
+    const savedEntries = localStorage.getItem(STORAGE_KEYS.SAVINGS_ENTRIES)
     if (savedEntries) {
       setEntries(JSON.parse(savedEntries))
     }
@@ -81,7 +83,7 @@ export default function Home() {
     })
 
     // Save to localStorage
-    localStorage.setItem('savingsEntries', JSON.stringify(entries))
+    localStorage.setItem(STORAGE_KEYS.SAVINGS_ENTRIES, JSON.stringify(entries))
   }, [entries])
 
   const handleAddEntry = (entry: Omit<SavingsEntry, 'id'>) => {
@@ -98,8 +100,10 @@ export default function Home() {
   }
 
   return (
-    <CurrencyProvider>
-      {isInitialLoading && <AppLoader onLoadComplete={handleLoadComplete} />}
+    <NotionProvider>
+      <CurrencyProvider>
+        <AutoSync entries={entries} />
+        {isInitialLoading && <AppLoader onLoadComplete={handleLoadComplete} />}
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
         {/* Main Content */}
         <main className="pt-16 pb-24 px-6 sm:px-8 lg:px-12">
@@ -125,15 +129,12 @@ export default function Home() {
           </div>
         </main>
 
-        {/* Bottom Navigation - Split into two menus */}
+        {/* Bottom Navigation */}
         <SplitBottomNav
           onAddClick={() => setShowAddPanel(true)}
           activeView={activeView}
           onViewChange={setActiveView}
         />
-
-        {/* Expandable Theme Toggle - Separate floating menu */}
-        <ExpandableThemeToggle />
 
         {/* Add Panel */}
         {showAddPanel && (
@@ -150,6 +151,7 @@ export default function Home() {
           </div>
         )}
       </div>
-    </CurrencyProvider>
+      </CurrencyProvider>
+    </NotionProvider>
   )
 }
