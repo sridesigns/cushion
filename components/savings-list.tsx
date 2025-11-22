@@ -15,17 +15,11 @@ export function SavingsList({ entries, onDelete }: SavingsListProps) {
   const { formatCurrency } = useCurrency()
   if (entries.length === 0) {
     return (
-      <div className="space-y-4">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Recent Transactions</h2>
-          <p className="text-sm text-muted-foreground">Your savings history will appear here</p>
-        </div>
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <div className="rounded-full bg-gradient-to-br from-primary/10 to-primary/5 p-4 mb-6 animate-pulse">
-            <ArrowUpCircle className="h-8 w-8 text-primary" />
-          </div>
+      <div className="space-y-3">
+        <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Activity</h2>
+        <div className="flex flex-col items-center justify-center py-20 text-center">
           <p className="text-sm text-muted-foreground max-w-sm">
-            Ready to start building your financial cushion? Tap the button below to add your first savings entry!
+            No transactions yet
           </p>
         </div>
       </div>
@@ -33,47 +27,41 @@ export function SavingsList({ entries, onDelete }: SavingsListProps) {
   }
 
   return (
-    <div className="space-y-4">
-      <div>
-        <h2 className="text-2xl font-bold tracking-tight">Recent Transactions</h2>
-        <p className="text-sm text-muted-foreground">{entries.length} {entries.length === 1 ? 'entry' : 'entries'} recorded</p>
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Activity</h2>
+        <p className="text-xs text-muted-foreground">{entries.length} {entries.length === 1 ? 'transaction' : 'transactions'}</p>
       </div>
-      <div className="space-y-3">
+      <div className="space-y-0 divide-y divide-border/50">
         {entries.map((entry, index) => (
           <div
             key={entry.id}
-            className="group flex items-center justify-between p-4 rounded-xl border bg-card hover:shadow-md hover:border-primary/20 transition-all duration-300 hover:-translate-y-0.5"
+            className="group flex items-center justify-between py-4 transition-all duration-200 hover:bg-muted/30 px-3 -mx-3"
             style={{
               animation: `slideIn 0.3s ease-out ${index * 0.05}s both`
             }}
           >
-            <div className="flex items-center gap-4">
-              <div className={`rounded-full p-2.5 transition-transform duration-300 group-hover:scale-110 ${
-                entry.type === 'deposit'
-                  ? 'bg-gradient-to-br from-green-500/20 to-emerald-500/10 text-green-600 dark:text-green-400'
-                  : 'bg-gradient-to-br from-red-500/20 to-rose-500/10 text-red-600 dark:text-red-400'
-              }`}>
-                {entry.type === 'deposit' ? (
-                  <ArrowUpCircle className="h-5 w-5" />
-                ) : (
-                  <ArrowDownCircle className="h-5 w-5" />
-                )}
-              </div>
-              <div className="space-y-1">
-                <p className="text-sm font-semibold">{entry.category}</p>
-                {entry.description && (
-                  <p className="text-xs text-muted-foreground">{entry.description}</p>
-                )}
-                <p className="text-xs text-muted-foreground">{formatDate(entry.date)}</p>
+            <div className="flex items-center gap-3 flex-1">
+              <div className="flex flex-col">
+                <p className="text-sm font-medium">{entry.category}</p>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <span>{formatDate(entry.date)}</span>
+                  {entry.description && (
+                    <>
+                      <span>·</span>
+                      <span className="truncate max-w-[200px]">{entry.description}</span>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
-            <div className="flex items-center gap-4">
-              <div className={`text-right font-mono ${
+            <div className="flex items-center gap-3">
+              <div className={`text-right tabular-nums ${
                 entry.type === 'deposit'
-                  ? 'text-green-600 dark:text-green-400'
+                  ? 'text-emerald-600 dark:text-emerald-400'
                   : 'text-red-600 dark:text-red-400'
               }`}>
-                <p className="text-base font-bold">
+                <p className="text-base font-semibold">
                   {entry.type === 'deposit' ? '+' : '-'}{formatCurrency(entry.amount)}
                 </p>
               </div>
@@ -81,9 +69,9 @@ export function SavingsList({ entries, onDelete }: SavingsListProps) {
                 variant="ghost"
                 size="icon"
                 onClick={() => onDelete(entry.id)}
-                className="h-9 w-9 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive hover:bg-destructive/10"
               >
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="h-3.5 w-3.5" />
               </Button>
             </div>
           </div>

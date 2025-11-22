@@ -9,9 +9,9 @@ export function ExpandableThemeToggle() {
   const [isExpanded, setIsExpanded] = useState(false)
 
   const getCurrentIcon = () => {
-    if (theme === 'light') return <Sun className="h-5 w-5 transition-transform duration-300 group-hover:rotate-90 group-hover:scale-110" />
-    if (theme === 'dark') return <Moon className="h-5 w-5 transition-transform duration-300 group-hover:-rotate-12 group-hover:scale-110" />
-    return <Monitor className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
+    if (theme === 'light') return <Sun className="h-5 w-5" />
+    if (theme === 'dark') return <Moon className="h-5 w-5" />
+    return <Monitor className="h-5 w-5" />
   }
 
   return (
@@ -20,54 +20,47 @@ export function ExpandableThemeToggle() {
       onMouseLeave={() => setIsExpanded(false)}
       className="fixed bottom-4 right-4 z-50"
     >
-      <div className={`bg-neutral-900/90 dark:bg-neutral-800/90 backdrop-blur-xl border border-neutral-700/50 rounded-full shadow-2xl transition-all duration-300 ease-out ${
-        isExpanded ? 'px-3 py-2' : 'p-3'
-      }`}>
-        {!isExpanded ? (
-          <div className="flex items-center justify-center group">
-            <div className="text-neutral-200">
-              {getCurrentIcon()}
-            </div>
-          </div>
-        ) : (
-          <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-2 duration-200">
-            <button
-              onClick={() => setTheme('light')}
-              className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all duration-200 ${
-                theme === 'light'
-                  ? 'bg-neutral-700/50 text-neutral-50'
-                  : 'text-neutral-400 hover:text-neutral-200'
-              }`}
-            >
-              <Sun className="h-5 w-5" />
-              <span className="text-xs font-medium whitespace-nowrap">Light</span>
-            </button>
+      <div className="bg-neutral-900/90 dark:bg-neutral-800/90 backdrop-blur-xl border border-neutral-700/50 rounded-full shadow-2xl px-2 py-2 transition-all duration-500 ease-in-out">
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => setTheme('light')}
+            className={`p-3 rounded-full transition-all duration-500 ease-in-out ${
+              theme === 'light'
+                ? 'bg-neutral-700/50 text-neutral-50 scale-100 opacity-100'
+                : isExpanded
+                ? 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-700/30 scale-100 opacity-100'
+                : 'scale-0 opacity-0 w-0 p-0'
+            }`}
+          >
+            <Sun className="h-5 w-5" />
+          </button>
 
-            <button
-              onClick={() => setTheme('dark')}
-              className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all duration-200 ${
-                theme === 'dark'
-                  ? 'bg-neutral-700/50 text-neutral-50'
-                  : 'text-neutral-400 hover:text-neutral-200'
-              }`}
-            >
-              <Moon className="h-5 w-5" />
-              <span className="text-xs font-medium whitespace-nowrap">Dark</span>
-            </button>
+          <button
+            onClick={() => setTheme('dark')}
+            className={`p-3 rounded-full transition-all duration-500 ease-in-out ${
+              theme === 'dark'
+                ? 'bg-neutral-700/50 text-neutral-50 scale-100 opacity-100'
+                : isExpanded
+                ? 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-700/30 scale-100 opacity-100'
+                : 'scale-0 opacity-0 w-0 p-0'
+            }`}
+          >
+            <Moon className="h-5 w-5" />
+          </button>
 
-            <button
-              onClick={() => setTheme('system')}
-              className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all duration-200 ${
-                theme === 'system'
-                  ? 'bg-neutral-700/50 text-neutral-50'
-                  : 'text-neutral-400 hover:text-neutral-200'
-              }`}
-            >
-              <Monitor className="h-5 w-5" />
-              <span className="text-xs font-medium whitespace-nowrap">Device</span>
-            </button>
-          </div>
-        )}
+          <button
+            onClick={() => setTheme('system')}
+            className={`p-3 rounded-full transition-all duration-500 ease-in-out ${
+              theme === 'system'
+                ? 'bg-neutral-700/50 text-neutral-50 scale-100 opacity-100'
+                : isExpanded
+                ? 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-700/30 scale-100 opacity-100'
+                : 'scale-0 opacity-0 w-0 p-0'
+            }`}
+          >
+            <Monitor className="h-5 w-5" />
+          </button>
+        </div>
       </div>
     </div>
   )

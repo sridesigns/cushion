@@ -102,25 +102,17 @@ export default function Home() {
       {isInitialLoading && <AppLoader />}
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
         {/* Main Content */}
-        <main className="pt-8 pb-28 px-8 sm:px-12 lg:px-16">
-          <div className="max-w-4xl mx-auto space-y-8">
+        <main className="pt-6 pb-24 px-6 sm:px-8 lg:px-12">
+          <div className="max-w-5xl mx-auto space-y-12">
             {activeView === 'home' ? (
               <>
-                {/* Welcome Section */}
-                <div className={isLoaded ? 'animate-stagger-1' : 'opacity-0'}>
-                  <h1 className="text-4xl font-bold tracking-tight mb-2">Your Financial Cushion</h1>
-                  <p className="text-lg text-muted-foreground">
-                    Track your savings journey
-                  </p>
-                </div>
-
                 {/* Summary Cards */}
-                <div className={isLoaded ? 'animate-stagger-2' : 'opacity-0'}>
+                <div className={isLoaded ? 'animate-stagger-1' : 'opacity-0'}>
                   <SavingsSummaryCards summary={summary} />
                 </div>
 
                 {/* Transactions List */}
-                <div className={isLoaded ? 'animate-stagger-3' : 'opacity-0'}>
+                <div className={isLoaded ? 'animate-stagger-2' : 'opacity-0'}>
                   <SavingsList entries={entries} onDelete={handleDeleteEntry} />
                 </div>
               </>
