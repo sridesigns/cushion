@@ -52,9 +52,9 @@ export function AddSavingsDialog({ onAdd }: AddSavingsDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
-        <Plus className="h-4 w-4" />
-        Add Savings
+      <DialogTrigger className="group inline-flex items-center justify-center rounded-full text-sm font-medium ring-offset-background transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 hover:scale-110 active:scale-95 h-16 w-16 shadow-lg hover:shadow-2xl">
+        <Plus className="h-7 w-7 transition-transform duration-300 group-hover:rotate-90" />
+        <span className="sr-only">Add Savings</span>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit}>

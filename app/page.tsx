@@ -86,16 +86,13 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <main className="container py-8">
+      <main className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24">
         <div className="space-y-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">Savings Dashboard</h1>
-              <p className="text-muted-foreground">
-                Track and manage your savings goals
-              </p>
-            </div>
-            <AddSavingsDialog onAdd={handleAddEntry} />
+          <div className="flex flex-col gap-2">
+            <h1 className="text-4xl font-bold tracking-tight">Your Financial Cushion</h1>
+            <p className="text-lg text-muted-foreground">
+              Track your savings journey
+            </p>
           </div>
 
           <SavingsSummaryCards summary={summary} />
@@ -103,6 +100,11 @@ export default function Home() {
           <SavingsList entries={entries} onDelete={handleDeleteEntry} />
         </div>
       </main>
+
+      {/* Floating Action Button */}
+      <div className="fixed bottom-8 right-8 z-50">
+        <AddSavingsDialog onAdd={handleAddEntry} />
+      </div>
     </div>
   )
 }
