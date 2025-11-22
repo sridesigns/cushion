@@ -1,14 +1,16 @@
 "use client"
 
-import { Moon, Sun, Monitor, Database, CheckCircle2, Loader2 } from "lucide-react"
+import { Moon, Sun, Monitor, Database, CheckCircle2, Loader2, LogOut } from "lucide-react"
 import { useTheme } from "next-themes"
 import { useCurrency, currencyConfig, type Currency } from "@/lib/currency-context"
 import { useNotion } from "@/lib/notion-context"
+import { useUser } from "@/lib/user-context"
 
 export function SettingsView() {
   const { currency, setCurrency } = useCurrency()
   const { theme, setTheme } = useTheme()
   const { isConnected, isConnecting, connect, disconnect } = useNotion()
+  const { userName, loginMethod, logout } = useUser()
 
   const handleCurrencyChange = (newCurrency: Currency) => {
     setCurrency(newCurrency)
@@ -155,6 +157,35 @@ export function SettingsView() {
               ) : (
                 'Connect'
               )}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Account Section */}
+      <div className="space-y-6">
+        <div className="space-y-1">
+          <h2 className="text-lg font-semibold">Account</h2>
+          <p className="text-sm text-muted-foreground">Manage your account settings</p>
+        </div>
+
+        {/* User Info */}
+        <div className="p-6 rounded-2xl border border-border bg-muted/30">
+          <div className="space-y-4">
+            <div className="space-y-1">
+              <p className="text-sm text-muted-foreground">Signed in as</p>
+              <p className="text-lg font-semibold">{userName || 'Guest'}</p>
+              <p className="text-sm text-muted-foreground capitalize">
+                {loginMethod === 'notion' ? 'Notion Account' : 'Guest Account'}
+              </p>
+            </div>
+
+            <button
+              onClick={logout}
+              className="w-full px-6 py-3 rounded-full font-medium text-sm transition-all duration-200 bg-muted hover:bg-muted/80 text-foreground border border-border flex items-center justify-center gap-2"
+            >
+              <LogOut className="h-4 w-4" />
+              Log Out
             </button>
           </div>
         </div>

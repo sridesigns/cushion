@@ -56,30 +56,42 @@ export function NotionProvider({ children }: { children: ReactNode }) {
 
   const connect = () => {
     if (!NOTION_CLIENT_ID) {
-      console.error('Notion Client ID not configured')
+      alert('Notion integration is not configured. Please set up NEXT_PUBLIC_NOTION_CLIENT_ID in your environment variables.')
+      setIsConnecting(false)
       return
     }
 
     setIsConnecting(true)
 
-    // Construct Notion OAuth URL
-    const authUrl = new URL('https://api.notion.com/v1/oauth/authorize')
-    authUrl.searchParams.set('client_id', NOTION_CLIENT_ID)
-    authUrl.searchParams.set('response_type', 'code')
-    authUrl.searchParams.set('owner', 'user')
-    authUrl.searchParams.set('redirect_uri', NOTION_REDIRECT_URI)
+    try {
+      // Construct Notion OAuth URL
+      const authUrl = new URL('https://api.notion.com/v1/oauth/authorize')
+      authUrl.searchParams.set('client_id', NOTION_CLIENT_ID)
+      authUrl.searchParams.set('response_type', 'code')
+      authUrl.searchParams.set('owner', 'user')
+      authUrl.searchParams.set('redirect_uri', NOTION_REDIRECT_URI)
 
-    // Open OAuth popup
-    const width = 600
-    const height = 700
-    const left = window.screenX + (window.outerWidth - width) / 2
-    const top = window.screenY + (window.outerHeight - height) / 2
+      // Open OAuth popup
+      const width = 600
+      const height = 700
+      const left = window.screenX + (window.outerWidth - width) / 2
+      const top = window.screenY + (window.outerHeight - height) / 2
 
-    window.open(
-      authUrl.toString(),
-      'notion-oauth',
-      `width=${width},height=${height},left=${left},top=${top}`
-    )
+      const popup = window.open(
+        authUrl.toString(),
+        'notion-oauth',
+        `width=${width},height=${height},left=${left},top=${top}`
+      )
+
+      if (!popup) {
+        alert('Popup was blocked. Please allow popups for this site to connect with Notion.')
+        setIsConnecting(false)
+      }
+    } catch (error) {
+      console.error('Failed to open OAuth popup:', error)
+      alert('Failed to connect to Notion. Please try again.')
+      setIsConnecting(false)
+    }
   }
 
   const disconnect = () => {

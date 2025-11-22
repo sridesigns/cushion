@@ -8,12 +8,16 @@ import { SavingsList } from "@/components/savings-list"
 import { SettingsView } from "@/components/settings-view"
 import { AppLoader } from "@/components/app-loader"
 import { AutoSync } from "@/components/auto-sync"
+import { LoginScreen } from "@/components/login-screen"
+import { WelcomeMessage } from "@/components/welcome-message"
 import { CurrencyProvider } from "@/lib/currency-context"
 import { NotionProvider } from "@/lib/notion-context"
+import { UserProvider, useUser } from "@/lib/user-context"
 import { STORAGE_KEYS } from "@/lib/constants"
 import type { SavingsEntry, SavingsSummary } from "@/lib/types"
 
-export default function Home() {
+function HomeContent() {
+  const { isAuthenticated } = useUser()
   const [entries, setEntries] = useState<SavingsEntry[]>([])
   const [showAddPanel, setShowAddPanel] = useState(false)
   const [activeView, setActiveView] = useState<'home' | 'settings'>('home')
@@ -99,24 +103,33 @@ export default function Home() {
     setEntries(entries.filter(entry => entry.id !== id))
   }
 
+  // Show login screen if not authenticated
+  if (!isAuthenticated) {
+    return <LoginScreen />
+  }
+
   return (
-    <NotionProvider>
-      <CurrencyProvider>
-        <AutoSync entries={entries} />
-        {isInitialLoading && <AppLoader onLoadComplete={handleLoadComplete} />}
+    <>
+      <AutoSync entries={entries} />
+      {isInitialLoading && <AppLoader onLoadComplete={handleLoadComplete} />}
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
         {/* Main Content */}
         <main className="pt-16 pb-24 px-6 sm:px-8 lg:px-12">
           <div className="max-w-5xl mx-auto space-y-12">
             {activeView === 'home' ? (
               <>
-                {/* Summary Cards */}
+                {/* Welcome Message */}
                 <div className={isLoaded ? 'animate-stagger-1' : 'opacity-0'}>
+                  <WelcomeMessage />
+                </div>
+
+                {/* Summary Cards */}
+                <div className={isLoaded ? 'animate-stagger-2' : 'opacity-0'}>
                   <SavingsSummaryCards summary={summary} />
                 </div>
 
                 {/* Transactions List */}
-                <div className={isLoaded ? 'animate-stagger-2' : 'opacity-0'}>
+                <div className={isLoaded ? 'animate-stagger-3' : 'opacity-0'}>
                   <SavingsList entries={entries} onDelete={handleDeleteEntry} />
                 </div>
               </>
@@ -151,7 +164,18 @@ export default function Home() {
           </div>
         )}
       </div>
-      </CurrencyProvider>
-    </NotionProvider>
+    </>
+  )
+}
+
+export default function Home() {
+  return (
+    <UserProvider>
+      <NotionProvider>
+        <CurrencyProvider>
+          <HomeContent />
+        </CurrencyProvider>
+      </NotionProvider>
+    </UserProvider>
   )
 }
