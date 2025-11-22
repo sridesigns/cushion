@@ -2,7 +2,7 @@
 
 import { TrendingUp, TrendingDown, DollarSign, Calendar } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { formatCurrency } from "@/lib/utils"
+import { useCurrency } from "@/lib/currency-context"
 import type { SavingsSummary } from "@/lib/types"
 
 interface SavingsSummaryProps {
@@ -10,6 +10,7 @@ interface SavingsSummaryProps {
 }
 
 export function SavingsSummaryCards({ summary }: SavingsSummaryProps) {
+  const { formatCurrency } = useCurrency()
   const monthlyChange = summary.thisMonth - summary.lastMonth
   const isPositive = monthlyChange >= 0
 

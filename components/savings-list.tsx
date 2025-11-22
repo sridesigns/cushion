@@ -3,7 +3,8 @@
 import { ArrowUpCircle, ArrowDownCircle, Trash2 } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { formatCurrency, formatDate } from "@/lib/utils"
+import { useCurrency } from "@/lib/currency-context"
+import { formatDate } from "@/lib/utils"
 import type { SavingsEntry } from "@/lib/types"
 
 interface SavingsListProps {
@@ -12,6 +13,7 @@ interface SavingsListProps {
 }
 
 export function SavingsList({ entries, onDelete }: SavingsListProps) {
+  const { formatCurrency } = useCurrency()
   if (entries.length === 0) {
     return (
       <Card className="border-dashed">
