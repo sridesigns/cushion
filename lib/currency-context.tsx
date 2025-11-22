@@ -23,13 +23,24 @@ const currencyConfig = {
 }
 
 export function CurrencyProvider({ children }: { children: ReactNode }) {
-  const [currency, setCurrencyState] = useState<Currency>('INR')
+  const [currency, setCurrencyState] = useState<Currency>(() => {
+    // Initialize from localStorage if available
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('currency') as Currency
+      if (saved && currencyConfig[saved]) {
+        return saved
+      }
+    }
+    return 'INR'
+  })
 
   useEffect(() => {
+    // Sync with localStorage on mount
     const saved = localStorage.getItem('currency') as Currency
     if (saved && currencyConfig[saved]) {
       setCurrencyState(saved)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const setCurrency = (newCurrency: Currency) => {

@@ -1,16 +1,12 @@
 "use client"
 
-import { useState } from "react"
 import { Check } from "lucide-react"
 import { useCurrency, currencyConfig, type Currency } from "@/lib/currency-context"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 export function SettingsView() {
   const { currency, setCurrency } = useCurrency()
-  const [selectedCurrency, setSelectedCurrency] = useState<Currency>(currency)
 
   const handleCurrencyChange = (newCurrency: Currency) => {
-    setSelectedCurrency(newCurrency)
     setCurrency(newCurrency)
   }
 
@@ -25,15 +21,15 @@ export function SettingsView() {
         </p>
       </div>
 
-      <Card className="border-0 shadow-none bg-transparent">
-        <CardHeader className="px-0">
-          <CardTitle>Currency</CardTitle>
-          <CardDescription>Select your preferred currency for displaying amounts</CardDescription>
-        </CardHeader>
-        <CardContent className="px-0 space-y-2">
+      <div className="space-y-4">
+        <div>
+          <h2 className="text-xl font-semibold mb-1">Currency</h2>
+          <p className="text-sm text-muted-foreground">Select your preferred currency for displaying amounts</p>
+        </div>
+        <div className="space-y-2">
           {currencies.map((curr) => {
             const config = currencyConfig[curr]
-            const isSelected = selectedCurrency === curr
+            const isSelected = currency === curr
 
             return (
               <button
@@ -64,8 +60,8 @@ export function SettingsView() {
               </button>
             )
           })}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   )
 }

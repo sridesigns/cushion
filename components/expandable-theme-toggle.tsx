@@ -9,9 +9,9 @@ export function ExpandableThemeToggle() {
   const [isExpanded, setIsExpanded] = useState(false)
 
   const getCurrentIcon = () => {
-    if (theme === 'light') return <Sun className="h-5 w-5" />
-    if (theme === 'dark') return <Moon className="h-5 w-5" />
-    return <Monitor className="h-5 w-5" />
+    if (theme === 'light') return <Sun className="h-5 w-5 transition-transform duration-300 group-hover:rotate-90 group-hover:scale-110" />
+    if (theme === 'dark') return <Moon className="h-5 w-5 transition-transform duration-300 group-hover:-rotate-12 group-hover:scale-110" />
+    return <Monitor className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
   }
 
   return (
@@ -20,11 +20,11 @@ export function ExpandableThemeToggle() {
       onMouseLeave={() => setIsExpanded(false)}
       className="fixed bottom-4 right-4 z-50"
     >
-      <div className={`bg-neutral-900/90 dark:bg-neutral-800/90 backdrop-blur-xl border border-neutral-700/50 rounded-2xl shadow-2xl transition-all duration-300 ease-out ${
+      <div className={`bg-neutral-900/90 dark:bg-neutral-800/90 backdrop-blur-xl border border-neutral-700/50 rounded-full shadow-2xl transition-all duration-300 ease-out ${
         isExpanded ? 'px-3 py-2' : 'p-3'
       }`}>
         {!isExpanded ? (
-          <div className="flex items-center justify-center">
+          <div className="flex items-center justify-center group">
             <div className="text-neutral-200">
               {getCurrentIcon()}
             </div>

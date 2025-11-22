@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Navigation } from "@/components/navigation"
 import { SplitBottomNav } from "@/components/split-bottom-nav"
 import { ExpandableThemeToggle } from "@/components/expandable-theme-toggle"
 import { AddSavingsForm } from "@/components/add-savings-form"
@@ -96,40 +95,32 @@ export default function Home() {
   return (
     <CurrencyProvider>
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-        <Navigation />
-
-        {/* Main Content - Floating above bottom nav */}
-        <main className="pt-28 pb-28 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto space-y-6">
+        {/* Main Content */}
+        <main className="pt-8 pb-28 px-8 sm:px-12 lg:px-16">
+          <div className="max-w-4xl mx-auto space-y-8">
             {activeView === 'home' ? (
               <>
-                {/* Welcome Section - Floating Card */}
-                <div className={`bg-background/60 backdrop-blur-2xl border border-border/50 rounded-3xl px-8 py-6 shadow-lg ${
-                  isLoaded ? 'animate-stagger-1' : 'opacity-0'
-                }`}>
+                {/* Welcome Section */}
+                <div className={isLoaded ? 'animate-stagger-1' : 'opacity-0'}>
                   <h1 className="text-4xl font-bold tracking-tight mb-2">Your Financial Cushion</h1>
                   <p className="text-lg text-muted-foreground">
                     Track your savings journey
                   </p>
                 </div>
 
-                {/* Summary Cards - Floating */}
-                <div className={`bg-background/60 backdrop-blur-2xl border border-border/50 rounded-3xl p-6 shadow-lg ${
-                  isLoaded ? 'animate-stagger-2' : 'opacity-0'
-                }`}>
+                {/* Summary Cards */}
+                <div className={isLoaded ? 'animate-stagger-2' : 'opacity-0'}>
                   <SavingsSummaryCards summary={summary} />
                 </div>
 
-                {/* Transactions List - Floating */}
-                <div className={`bg-background/60 backdrop-blur-2xl border border-border/50 rounded-3xl p-6 shadow-lg ${
-                  isLoaded ? 'animate-stagger-3' : 'opacity-0'
-                }`}>
+                {/* Transactions List */}
+                <div className={isLoaded ? 'animate-stagger-3' : 'opacity-0'}>
                   <SavingsList entries={entries} onDelete={handleDeleteEntry} />
                 </div>
               </>
             ) : (
               /* Settings View */
-              <div className="bg-background/60 backdrop-blur-2xl border border-border/50 rounded-3xl p-8 shadow-lg animate-scale-in">
+              <div className="animate-scale-in">
                 <SettingsView />
               </div>
             )}

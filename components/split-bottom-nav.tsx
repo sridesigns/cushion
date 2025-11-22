@@ -11,7 +11,7 @@ interface SplitBottomNavProps {
 export function SplitBottomNav({ onAddClick, activeView, onViewChange }: SplitBottomNavProps) {
   return (
     <nav className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-md">
-      <div className="bg-neutral-900/90 dark:bg-neutral-800/90 backdrop-blur-xl border border-neutral-700/50 rounded-2xl px-3 py-2 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="bg-neutral-900/90 dark:bg-neutral-800/90 backdrop-blur-xl border border-neutral-700/50 rounded-full px-3 py-2 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="flex items-center justify-between gap-2">
           {/* Home */}
           <button
