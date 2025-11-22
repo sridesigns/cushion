@@ -7,6 +7,7 @@ import { AddSavingsForm } from "@/components/add-savings-form"
 import { SavingsSummaryCards } from "@/components/savings-summary"
 import { SavingsList } from "@/components/savings-list"
 import { SettingsView } from "@/components/settings-view"
+import { AppLoader } from "@/components/app-loader"
 import { CurrencyProvider } from "@/lib/currency-context"
 import type { SavingsEntry, SavingsSummary } from "@/lib/types"
 
@@ -15,6 +16,7 @@ export default function Home() {
   const [showAddPanel, setShowAddPanel] = useState(false)
   const [activeView, setActiveView] = useState<'home' | 'settings'>('home')
   const [isLoaded, setIsLoaded] = useState(false)
+  const [isInitialLoading, setIsInitialLoading] = useState(true)
   const [summary, setSummary] = useState<SavingsSummary>({
     totalSavings: 0,
     thisMonth: 0,
@@ -28,8 +30,11 @@ export default function Home() {
     if (savedEntries) {
       setEntries(JSON.parse(savedEntries))
     }
-    // Trigger loading animation
-    setTimeout(() => setIsLoaded(true), 100)
+    // Show loading screen for a bit, then fade in content
+    setTimeout(() => {
+      setIsInitialLoading(false)
+      setTimeout(() => setIsLoaded(true), 100)
+    }, 1500)
   }, [])
 
   // Calculate summary whenever entries change
@@ -94,6 +99,7 @@ export default function Home() {
 
   return (
     <CurrencyProvider>
+      {isInitialLoading && <AppLoader />}
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
         {/* Main Content */}
         <main className="pt-8 pb-28 px-8 sm:px-12 lg:px-16">

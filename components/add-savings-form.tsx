@@ -1,10 +1,11 @@
 "use client"
 
 import { useState } from "react"
-import { X, ArrowRight, ArrowLeft, Calendar as CalendarIcon, DollarSign, Tag, FileText } from "lucide-react"
+import { X, ArrowRight, ArrowLeft, Calendar as CalendarIcon, Tag, FileText } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useCurrency, currencyConfig } from "@/lib/currency-context"
 import type { SavingsEntry } from "@/lib/types"
 
 interface AddSavingsFormProps {
@@ -13,6 +14,8 @@ interface AddSavingsFormProps {
 }
 
 export function AddSavingsForm({ onAdd, onClose }: AddSavingsFormProps) {
+  const { currency, formatCurrency } = useCurrency()
+  const currencySymbol = currencyConfig[currency].symbol
   const [step, setStep] = useState(1)
   const [amount, setAmount] = useState("")
   const [category, setCategory] = useState("")
@@ -151,8 +154,8 @@ export function AddSavingsForm({ onAdd, onClose }: AddSavingsFormProps) {
             </div>
             <div className="space-y-4">
               <div className="relative">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
-                  <DollarSign className="h-6 w-6" />
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground text-2xl font-semibold">
+                  {currencySymbol}
                 </div>
                 <Input
                   type="number"
@@ -171,7 +174,7 @@ export function AddSavingsForm({ onAdd, onClose }: AddSavingsFormProps) {
                     onClick={() => setAmount(preset)}
                     className="rounded-xl border bg-muted/50 backdrop-blur-sm px-4 py-2 text-sm font-medium hover:bg-muted transition-colors"
                   >
-                    ${preset}
+                    {currencySymbol}{preset}
                   </button>
                 ))}
               </div>
@@ -264,7 +267,7 @@ export function AddSavingsForm({ onAdd, onClose }: AddSavingsFormProps) {
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Amount</span>
-                    <span className="font-semibold">${amount || '0.00'}</span>
+                    <span className="font-semibold">{formatCurrency(parseFloat(amount) || 0)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Category</span>

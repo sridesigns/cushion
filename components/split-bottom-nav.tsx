@@ -16,7 +16,7 @@ export function SplitBottomNav({ onAddClick, activeView, onViewChange }: SplitBo
           {/* Home */}
           <button
             onClick={() => onViewChange('home')}
-            className={`flex flex-col items-center gap-0.5 px-6 py-2 rounded-xl transition-all duration-200 ${
+            className={`flex flex-col items-center gap-0.5 px-6 py-2 rounded-full transition-all duration-200 ${
               activeView === 'home'
                 ? 'bg-neutral-700/50 text-neutral-50'
                 : 'text-neutral-400 hover:text-neutral-200'
@@ -29,7 +29,7 @@ export function SplitBottomNav({ onAddClick, activeView, onViewChange }: SplitBo
           {/* Settings */}
           <button
             onClick={() => onViewChange('settings')}
-            className={`flex flex-col items-center gap-0.5 px-6 py-2 rounded-xl transition-all duration-200 ${
+            className={`flex flex-col items-center gap-0.5 px-6 py-2 rounded-full transition-all duration-200 ${
               activeView === 'settings'
                 ? 'bg-neutral-700/50 text-neutral-50'
                 : 'text-neutral-400 hover:text-neutral-200'
@@ -42,7 +42,7 @@ export function SplitBottomNav({ onAddClick, activeView, onViewChange }: SplitBo
           {/* Add Button (Last item) */}
           <button
             onClick={onAddClick}
-            className="flex items-center gap-2 bg-neutral-50 dark:bg-neutral-100 text-neutral-900 px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-neutral-200 dark:hover:bg-neutral-200 transition-all duration-200 shadow-lg hover:shadow-xl active:scale-95"
+            className="flex items-center gap-2 bg-neutral-50 dark:bg-neutral-100 text-neutral-900 px-6 py-2.5 rounded-full font-semibold text-sm hover:bg-neutral-200 dark:hover:bg-neutral-200 transition-all duration-200 shadow-lg hover:shadow-xl active:scale-95"
           >
             <Plus className="h-5 w-5" />
             Add
