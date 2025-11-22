@@ -1,7 +1,7 @@
 "use client"
 
 import { PiggyBank, Wallet } from "lucide-react"
-import { ThemeToggle } from "./theme-toggle"
+import { ThemeSwitcher } from "./theme-switcher"
 
 export function Navigation() {
   return (
@@ -24,7 +24,7 @@ export function Navigation() {
             <PiggyBank className="h-4 w-4" />
             Savings
           </a>
-          <ThemeToggle />
+          <ThemeSwitcher />
         </nav>
       </div>
     </header>

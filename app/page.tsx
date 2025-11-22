@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Navigation } from "@/components/navigation"
-import { AddSavingsDialog } from "@/components/add-savings-dialog"
+import { AddSavingsPanel } from "@/components/add-savings-panel"
 import { SavingsSummaryCards } from "@/components/savings-summary"
 import { SavingsList } from "@/components/savings-list"
 import type { SavingsEntry, SavingsSummary } from "@/lib/types"
@@ -103,7 +103,7 @@ export default function Home() {
 
       {/* Floating Action Button */}
       <div className="fixed bottom-8 right-8 z-50">
-        <AddSavingsDialog onAdd={handleAddEntry} />
+        <AddSavingsPanel onAdd={handleAddEntry} />
       </div>
     </div>
   )
