@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Database, User, ArrowRight } from 'lucide-react'
 import { useUser } from '@/lib/user-context'
 import { useNotion } from '@/lib/notion-context'
@@ -8,8 +8,14 @@ import { useNotion } from '@/lib/notion-context'
 export function LoginScreen() {
   const [showGuestForm, setShowGuestForm] = useState(false)
   const [guestName, setGuestName] = useState('')
+  const [isNotionConfigured, setIsNotionConfigured] = useState(false)
   const { loginWithNotion, loginAsGuest } = useUser()
   const { connect, isConnecting } = useNotion()
+
+  // Check if Notion is configured
+  useEffect(() => {
+    setIsNotionConfigured(!!process.env.NEXT_PUBLIC_NOTION_CLIENT_ID)
+  }, [])
 
   const handleNotionLogin = () => {
     loginWithNotion()
@@ -81,35 +87,39 @@ export function LoginScreen() {
 
         {/* Login Options */}
         <div className="space-y-4">
-          {/* Continue with Notion */}
-          <button
-            onClick={handleNotionLogin}
-            disabled={isConnecting}
-            className="group w-full p-6 rounded-2xl border-2 border-border hover:border-primary/50 bg-muted/30 hover:bg-muted/50 transition-all duration-200 text-left disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <div className="flex items-center gap-4">
-              <div className="flex-shrink-0 p-3 rounded-xl bg-background border border-border group-hover:border-primary/50 transition-colors">
-                <Database className="h-6 w-6 text-foreground" />
-              </div>
-              <div className="flex-1 space-y-1">
-                <h3 className="text-lg font-semibold">Continue with Notion</h3>
-                <p className="text-sm text-muted-foreground">
-                  {isConnecting ? 'Connecting...' : 'Sync your data automatically'}
-                </p>
-              </div>
-              <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-foreground group-hover:translate-x-1 transition-all" />
-            </div>
-          </button>
+          {/* Continue with Notion - Only show if configured */}
+          {isNotionConfigured && (
+            <>
+              <button
+                onClick={handleNotionLogin}
+                disabled={isConnecting}
+                className="group w-full p-6 rounded-2xl border-2 border-border hover:border-primary/50 bg-muted/30 hover:bg-muted/50 transition-all duration-200 text-left disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="flex-shrink-0 p-3 rounded-xl bg-background border border-border group-hover:border-primary/50 transition-colors">
+                    <Database className="h-6 w-6 text-foreground" />
+                  </div>
+                  <div className="flex-1 space-y-1">
+                    <h3 className="text-lg font-semibold">Continue with Notion</h3>
+                    <p className="text-sm text-muted-foreground">
+                      {isConnecting ? 'Connecting...' : 'Sync your data automatically'}
+                    </p>
+                  </div>
+                  <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-foreground group-hover:translate-x-1 transition-all" />
+                </div>
+              </button>
 
-          {/* Divider */}
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-border/50"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-background text-muted-foreground">or</span>
-            </div>
-          </div>
+              {/* Divider */}
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-border/50"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-4 bg-background text-muted-foreground">or</span>
+                </div>
+              </div>
+            </>
+          )}
 
           {/* Continue as Guest */}
           <button

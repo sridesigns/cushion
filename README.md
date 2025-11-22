@@ -8,13 +8,15 @@ A modern, clean web application to track your savings and expenses. Built with t
 
 ## Features
 
-- **Savings Tracking** - Easily track deposits and withdrawals
-- **Dashboard Overview** - View your total savings, monthly trends, and averages at a glance
-- **Transaction History** - See all your savings transactions in an organized list
-- **Dark Mode** - Seamless dark/light mode support with system preference detection
-- **Local Storage** - Your data persists locally in your browser
-- **Clean UI** - Modern, intuitive interface inspired by Monarch
-- **Responsive Design** - Works perfectly on desktop and mobile devices
+- ✨ **Modern Design** - Sleek glassmorphism UI with neon green branding
+- 📊 **Savings Tracking** - Track deposits and withdrawals with categories
+- 💰 **Multi-Currency** - Support for INR, USD, EUR, SGD, HKD, CNY, JPY
+- 🎨 **Theme Support** - Light, dark, and system themes
+- 🌐 **Notion Integration** - Optional auto-sync to Notion database
+- 👤 **User Profiles** - Personalized welcome messages with time-based greetings
+- 🔐 **Secure** - Input validation and sanitization for all user data
+- 📱 **Responsive** - Works beautifully on mobile and desktop
+- 💾 **Local Storage** - Your data persists locally with optional cloud sync
 
 ## Tech Stack
 
@@ -54,28 +56,47 @@ npm run dev
 
 ## Usage
 
+### For End Users
+
+When you first open the app, you'll see a login screen with two options:
+
+1. **Continue with Notion** (if enabled by app owner)
+   - Syncs your data to Notion automatically
+   - Requires a Notion account
+   - Data backed up to the cloud
+
+2. **Continue as Guest**
+   - Works entirely offline
+   - Data stored in your browser
+   - No account required
+   - Enter your name for a personalized experience
+
 ### Adding a Savings Entry
 
-1. Click the "Add Savings" button in the top right
+1. Click the "+" button in the bottom navigation
 2. Choose whether it's a deposit or withdrawal
-3. Enter the amount and category
-4. Optionally add a description
-5. Select the date
-6. Click "Save Entry"
+3. Enter the amount (quick presets available)
+4. Add a category for organization
+5. Optionally add a description and select date
+6. Review and save
 
 ### Viewing Your Dashboard
 
-The dashboard displays:
-- **Total Savings**: Your cumulative savings balance
-- **This Month**: Savings for the current month
-- **Last Month**: Previous month's savings
-- **Monthly Average**: Average monthly savings across all time
+The dashboard shows:
+- **Personalized greeting** - Changes based on time of day
+- **Total Savings** - Your cumulative savings balance
+- **This Month** - Savings for the current month
+- **Last Month** - Previous month's savings
+- **Monthly Average** - Average monthly savings
 
-### Managing Transactions
+### Settings
 
-- View all transactions in the "Recent Transactions" section
-- Delete any transaction by clicking the trash icon
-- Transactions are sorted by date (most recent first)
+Access settings to:
+- Change theme (Light/Dark/System)
+- Select your preferred currency
+- Connect/disconnect Notion (if enabled)
+- View account information
+- Log out
 
 ## Deployment
 
@@ -90,18 +111,66 @@ This app is optimized for deployment on [Vercel](https://vercel.com):
 3. Vercel will automatically detect Next.js and deploy
 4. Your app will be live!
 
+## Notion Integration Setup (Optional - For App Owners)
+
+If you want to enable Notion sync for your users, follow these steps:
+
+### Step 1: Create a Notion Integration
+
+1. Go to [https://www.notion.so/my-integrations](https://www.notion.so/my-integrations)
+2. Click "+ New integration"
+3. Fill in the details:
+   - **Name**: Cushion Savings Tracker
+   - **Type**: Public
+   - **Capabilities**: Select "Read content", "Update content", "Insert content"
+4. Add Redirect URIs:
+   - Development: `http://localhost:3000/api/notion/callback`
+   - Production: `https://yourdomain.com/api/notion/callback`
+5. Click "Submit"
+6. Copy your **OAuth client ID** and **OAuth client secret**
+
+### Step 2: Set Environment Variables
+
+**For Local Development:**
+
+1. Copy `.env.example` to `.env.local`
+2. Add your credentials:
+```env
+NEXT_PUBLIC_NOTION_CLIENT_ID=your_client_id_here
+NOTION_CLIENT_SECRET=your_client_secret_here
+```
+
+**For Production:**
+
+Add these environment variables in your Vercel/hosting platform settings:
+- `NEXT_PUBLIC_NOTION_CLIENT_ID`: Your integration's OAuth client ID
+- `NOTION_CLIENT_SECRET`: Your integration's OAuth client secret
+
+### Important Notes
+
+- **You only need to do this once** - all your users will connect through YOUR integration
+- If you skip this, the app still works perfectly - users just won't see the Notion option
+- Users will see "Continue with Notion" only if you've configured these environment variables
+- Make sure to add your production domain to Notion's Redirect URIs!
+
 ## Roadmap
 
+### Completed ✅
+- [x] Multi-currency support
+- [x] User authentication (Notion/Guest)
+- [x] Backend integration (Notion database)
+- [x] Categories management
+- [x] Dark mode support
+- [x] Responsive mobile design
+
+### Coming Soon
 - [ ] Expense tracking functionality
-- [ ] Categories management
 - [ ] Data export (CSV, PDF)
 - [ ] Budget goals and targets
 - [ ] Charts and visualizations
-- [ ] Backend integration (database)
-- [ ] User authentication
-- [ ] Multi-currency support
 - [ ] Mobile apps (iOS & Android)
 - [ ] Recurring transactions
+- [ ] More integrations (Google Sheets, Airtable, etc.)
 
 ## Contributing
 

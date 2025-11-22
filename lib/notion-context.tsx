@@ -56,7 +56,7 @@ export function NotionProvider({ children }: { children: ReactNode }) {
 
   const connect = () => {
     if (!NOTION_CLIENT_ID) {
-      alert('Notion integration is not configured. Please set up NEXT_PUBLIC_NOTION_CLIENT_ID in your environment variables.')
+      console.error('Notion Client ID not configured')
       setIsConnecting(false)
       return
     }
