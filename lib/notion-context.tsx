@@ -7,9 +7,10 @@ import type { SavingsEntry } from './types'
 interface NotionContextType {
   isConnected: boolean
   isConnecting: boolean
-  connect: () => void
+  connect: (onSuccess?: (userName: string) => void) => void
   disconnect: () => void
   syncData: (entries: SavingsEntry[]) => Promise<void>
+  getUserInfo: () => Promise<{ name: string } | null>
 }
 
 const NotionContext = createContext<NotionContextType | undefined>(undefined)
@@ -23,6 +24,7 @@ export function NotionProvider({ children }: { children: ReactNode }) {
   const [isConnected, setIsConnected] = useState(false)
   const [isConnecting, setIsConnecting] = useState(false)
   const [accessToken, setAccessToken] = useState<string | null>(null)
+  const [onSuccessCallback, setOnSuccessCallback] = useState<((userName: string) => void) | null>(null)
 
   // Load connection state from localStorage
   useEffect(() => {
@@ -35,14 +37,48 @@ export function NotionProvider({ children }: { children: ReactNode }) {
 
   // Listen for OAuth callback
   useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
+    const handleMessage = async (event: MessageEvent) => {
       if (event.data.type === 'notion-oauth-success') {
-        const { access_token } = event.data
+        const { access_token, workspace_name } = event.data
         if (access_token) {
           setAccessToken(access_token)
           setIsConnected(true)
           setIsConnecting(false)
           localStorage.setItem(STORAGE_KEYS.NOTION_ACCESS_TOKEN, access_token)
+
+          // Fetch user info from Notion
+          try {
+            const response = await fetch('https://api.notion.com/v1/users/me', {
+              headers: {
+                'Authorization': `Bearer ${access_token}`,
+                'Notion-Version': '2022-06-28',
+              },
+            })
+
+            if (response.ok) {
+              const userData = await response.json()
+              const userName = userData.name || workspace_name || 'User'
+
+              // Call the success callback with user name
+              if (onSuccessCallback) {
+                onSuccessCallback(userName)
+                setOnSuccessCallback(null)
+              }
+            } else {
+              // If we can't get user info, still call callback without name
+              if (onSuccessCallback) {
+                onSuccessCallback('')
+                setOnSuccessCallback(null)
+              }
+            }
+          } catch (error) {
+            console.error('Failed to fetch user info:', error)
+            // Call callback without name if fetch fails
+            if (onSuccessCallback) {
+              onSuccessCallback('')
+              setOnSuccessCallback(null)
+            }
+          }
         }
       } else if (event.data.type === 'notion-oauth-error') {
         setIsConnecting(false)
@@ -52,13 +88,18 @@ export function NotionProvider({ children }: { children: ReactNode }) {
 
     window.addEventListener('message', handleMessage)
     return () => window.removeEventListener('message', handleMessage)
-  }, [])
+  }, [onSuccessCallback])
 
-  const connect = () => {
+  const connect = (onSuccess?: (userName: string) => void) => {
     if (!NOTION_CLIENT_ID) {
       console.error('Notion Client ID not configured')
       setIsConnecting(false)
       return
+    }
+
+    // Store the callback
+    if (onSuccess) {
+      setOnSuccessCallback(() => onSuccess)
     }
 
     setIsConnecting(true)
@@ -101,6 +142,28 @@ export function NotionProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem(STORAGE_KEYS.NOTION_DATABASE_ID)
   }
 
+  const getUserInfo = async () => {
+    if (!accessToken) return null
+
+    try {
+      const response = await fetch('https://api.notion.com/v1/users/me', {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Notion-Version': '2022-06-28',
+        },
+      })
+
+      if (response.ok) {
+        const userData = await response.json()
+        return { name: userData.name || 'User' }
+      }
+    } catch (error) {
+      console.error('Failed to fetch user info:', error)
+    }
+
+    return null
+  }
+
   const syncData = async (entries: SavingsEntry[]) => {
     if (!isConnected || !accessToken) {
       return
@@ -136,7 +199,7 @@ export function NotionProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <NotionContext.Provider value={{ isConnected, isConnecting, connect, disconnect, syncData }}>
+    <NotionContext.Provider value={{ isConnected, isConnecting, connect, disconnect, syncData, getUserInfo }}>
       {children}
     </NotionContext.Provider>
   )

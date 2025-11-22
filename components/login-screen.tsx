@@ -9,7 +9,7 @@ export function LoginScreen() {
   const [showGuestForm, setShowGuestForm] = useState(false)
   const [guestName, setGuestName] = useState('')
   const [isNotionConfigured, setIsNotionConfigured] = useState(false)
-  const { loginWithNotion, loginAsGuest } = useUser()
+  const { startNotionLogin, completeNotionLogin, loginAsGuest } = useUser()
   const { connect, isConnecting } = useNotion()
 
   // Check if Notion is configured
@@ -18,8 +18,10 @@ export function LoginScreen() {
   }, [])
 
   const handleNotionLogin = () => {
-    loginWithNotion()
-    connect()
+    startNotionLogin()
+    connect((userName) => {
+      completeNotionLogin(userName)
+    })
   }
 
   const handleGuestLogin = () => {

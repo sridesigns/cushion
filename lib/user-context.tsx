@@ -5,11 +5,14 @@ import { STORAGE_KEYS } from './constants'
 
 interface UserContextType {
   isAuthenticated: boolean
+  isPending: boolean
   userName: string | null
   loginMethod: 'notion' | 'guest' | null
   loginTime: Date | null
+  needsOnboarding: boolean
   setUserName: (name: string) => void
-  loginWithNotion: () => void
+  startNotionLogin: () => void
+  completeNotionLogin: (name?: string) => void
   loginAsGuest: (name: string) => void
   logout: () => void
   getGreeting: () => string
@@ -19,6 +22,8 @@ const UserContext = createContext<UserContextType | undefined>(undefined)
 
 export function UserProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isPending, setIsPending] = useState(false)
+  const [needsOnboarding, setNeedsOnboarding] = useState(false)
   const [userName, setUserNameState] = useState<string | null>(null)
   const [loginMethod, setLoginMethod] = useState<'notion' | 'guest' | null>(null)
   const [loginTime, setLoginTime] = useState<Date | null>(null)
@@ -42,13 +47,27 @@ export function UserProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(STORAGE_KEYS.USER_NAME, name)
   }
 
-  const loginWithNotion = () => {
+  const startNotionLogin = () => {
+    // Set pending state while waiting for OAuth
+    setIsPending(true)
+  }
+
+  const completeNotionLogin = (name?: string) => {
     const now = new Date()
     setLoginMethod('notion')
     setLoginTime(now)
-    setIsAuthenticated(true)
     localStorage.setItem(STORAGE_KEYS.LOGIN_METHOD, 'notion')
     localStorage.setItem(STORAGE_KEYS.LOGIN_TIME, now.toISOString())
+
+    if (name) {
+      setUserName(name)
+      setIsAuthenticated(true)
+      setIsPending(false)
+    } else {
+      // Need to ask for name
+      setNeedsOnboarding(true)
+      setIsPending(false)
+    }
   }
 
   const loginAsGuest = (name: string) => {
@@ -66,6 +85,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
     setLoginMethod(null)
     setLoginTime(null)
     setIsAuthenticated(false)
+    setIsPending(false)
+    setNeedsOnboarding(false)
     localStorage.removeItem(STORAGE_KEYS.USER_NAME)
     localStorage.removeItem(STORAGE_KEYS.LOGIN_METHOD)
     localStorage.removeItem(STORAGE_KEYS.LOGIN_TIME)
@@ -91,11 +112,14 @@ export function UserProvider({ children }: { children: ReactNode }) {
     <UserContext.Provider
       value={{
         isAuthenticated,
+        isPending,
         userName,
         loginMethod,
         loginTime,
+        needsOnboarding,
         setUserName,
-        loginWithNotion,
+        startNotionLogin,
+        completeNotionLogin,
         loginAsGuest,
         logout,
         getGreeting,

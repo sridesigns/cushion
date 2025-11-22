@@ -10,6 +10,7 @@ import { AppLoader } from "@/components/app-loader"
 import { AutoSync } from "@/components/auto-sync"
 import { LoginScreen } from "@/components/login-screen"
 import { WelcomeMessage } from "@/components/welcome-message"
+import { NotionOnboarding } from "@/components/notion-onboarding"
 import { CurrencyProvider } from "@/lib/currency-context"
 import { NotionProvider } from "@/lib/notion-context"
 import { UserProvider, useUser } from "@/lib/user-context"
@@ -17,7 +18,7 @@ import { STORAGE_KEYS } from "@/lib/constants"
 import type { SavingsEntry, SavingsSummary } from "@/lib/types"
 
 function HomeContent() {
-  const { isAuthenticated } = useUser()
+  const { isAuthenticated, isPending, needsOnboarding } = useUser()
   const [entries, setEntries] = useState<SavingsEntry[]>([])
   const [showAddPanel, setShowAddPanel] = useState(false)
   const [activeView, setActiveView] = useState<'home' | 'settings'>('home')
@@ -103,9 +104,19 @@ function HomeContent() {
     setEntries(entries.filter(entry => entry.id !== id))
   }
 
-  // Show login screen if not authenticated
-  if (!isAuthenticated) {
+  // Show login screen if not authenticated and not pending
+  if (!isAuthenticated && !isPending && !needsOnboarding) {
     return <LoginScreen />
+  }
+
+  // Show loading while pending Notion OAuth
+  if (isPending) {
+    return <AppLoader onLoadComplete={() => {}} />
+  }
+
+  // Show onboarding if user needs to enter their name
+  if (needsOnboarding) {
+    return <NotionOnboarding />
   }
 
   return (

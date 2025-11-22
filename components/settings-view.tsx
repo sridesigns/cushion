@@ -147,7 +147,7 @@ export function SettingsView() {
                 </div>
               </div>
               <button
-                onClick={isConnected ? disconnect : connect}
+                onClick={isConnected ? disconnect : () => connect()}
                 disabled={isConnecting}
                 className={`px-6 py-2.5 rounded-full font-medium text-sm transition-all duration-200 whitespace-nowrap ${
                   isConnected
