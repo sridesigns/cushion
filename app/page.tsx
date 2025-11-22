@@ -30,12 +30,12 @@ export default function Home() {
     if (savedEntries) {
       setEntries(JSON.parse(savedEntries))
     }
-    // Show loading screen for a bit, then fade in content
-    setTimeout(() => {
-      setIsInitialLoading(false)
-      setTimeout(() => setIsLoaded(true), 100)
-    }, 1500)
   }, [])
+
+  const handleLoadComplete = () => {
+    setIsInitialLoading(false)
+    setTimeout(() => setIsLoaded(true), 100)
+  }
 
   // Calculate summary whenever entries change
   useEffect(() => {
@@ -99,7 +99,7 @@ export default function Home() {
 
   return (
     <CurrencyProvider>
-      {isInitialLoading && <AppLoader />}
+      {isInitialLoading && <AppLoader onLoadComplete={handleLoadComplete} />}
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
         {/* Main Content */}
         <main className="pt-16 pb-24 px-6 sm:px-8 lg:px-12">

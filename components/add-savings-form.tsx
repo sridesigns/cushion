@@ -22,6 +22,11 @@ export function AddSavingsForm({ onAdd, onClose }: AddSavingsFormProps) {
   const [description, setDescription] = useState("")
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
   const [type, setType] = useState<'deposit' | 'withdrawal'>('deposit')
+  const [showMoreAmounts, setShowMoreAmounts] = useState(false)
+
+  const baseAmounts = ['500', '1000', '2000', '5000', '10000', '50000']
+  const extendedAmounts = ['75000', '100000', '150000', '200000']
+  const displayAmounts = showMoreAmounts ? [...baseAmounts, ...extendedAmounts] : baseAmounts
 
   const handleSubmit = () => {
     if (!amount || !category) return
@@ -167,16 +172,31 @@ export function AddSavingsForm({ onAdd, onClose }: AddSavingsFormProps) {
                   autoFocus
                 />
               </div>
-              <div className="grid grid-cols-3 gap-2">
-                {['10', '50', '100', '200', '500', '1000'].map((preset) => (
+              <div className="space-y-2">
+                <div className="grid grid-cols-3 gap-2">
+                  {displayAmounts.map((preset) => (
+                    <button
+                      key={preset}
+                      onClick={() => {
+                        setAmount(preset)
+                        if (preset === '50000' && !showMoreAmounts) {
+                          setShowMoreAmounts(true)
+                        }
+                      }}
+                      className="rounded-xl border bg-muted/50 backdrop-blur-sm px-4 py-2 text-sm font-medium hover:bg-muted transition-colors"
+                    >
+                      {currencySymbol}{parseInt(preset).toLocaleString()}
+                    </button>
+                  ))}
+                </div>
+                {!showMoreAmounts && (
                   <button
-                    key={preset}
-                    onClick={() => setAmount(preset)}
-                    className="rounded-xl border bg-muted/50 backdrop-blur-sm px-4 py-2 text-sm font-medium hover:bg-muted transition-colors"
+                    onClick={() => setShowMoreAmounts(true)}
+                    className="w-full text-xs text-muted-foreground hover:text-foreground transition-colors py-1"
                   >
-                    {currencySymbol}{preset}
+                    Show larger amounts →
                   </button>
-                ))}
+                )}
               </div>
             </div>
           </div>

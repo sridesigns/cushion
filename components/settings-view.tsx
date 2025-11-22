@@ -1,6 +1,5 @@
 "use client"
 
-import { Check } from "lucide-react"
 import { useCurrency, currencyConfig, type Currency } from "@/lib/currency-context"
 
 export function SettingsView() {
@@ -13,20 +12,22 @@ export function SettingsView() {
   const currencies: Currency[] = ['INR', 'USD', 'EUR', 'SGD', 'HKD', 'CNY', 'JPY']
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight mb-2">Settings</h1>
-        <p className="text-muted-foreground">
-          Customize your Cushion experience
-        </p>
+    <div className="space-y-12">
+      {/* Header */}
+      <div className="space-y-1">
+        <p className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Settings</p>
+        <h1 className="text-4xl font-bold tracking-tight">Preferences</h1>
       </div>
 
-      <div className="space-y-4">
-        <div>
-          <h2 className="text-xl font-semibold mb-1">Currency</h2>
-          <p className="text-sm text-muted-foreground">Select your preferred currency for displaying amounts</p>
+      {/* Currency Section */}
+      <div className="space-y-6">
+        <div className="space-y-1">
+          <h2 className="text-lg font-semibold">Display Currency</h2>
+          <p className="text-sm text-muted-foreground">Choose how amounts are displayed throughout the app</p>
         </div>
-        <div className="space-y-2">
+
+        {/* Currency Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {currencies.map((curr) => {
             const config = currencyConfig[curr]
             const isSelected = currency === curr
@@ -35,31 +36,37 @@ export function SettingsView() {
               <button
                 key={curr}
                 onClick={() => handleCurrencyChange(curr)}
-                className={`w-full flex items-center justify-between p-4 rounded-2xl border-2 transition-all duration-200 ${
+                className={`relative p-4 rounded-2xl border transition-all duration-200 text-left ${
                   isSelected
-                    ? 'border-primary bg-primary/5'
-                    : 'border-border hover:border-primary/50 hover:bg-accent/50'
+                    ? 'border-primary bg-primary/5 shadow-sm'
+                    : 'border-border hover:border-primary/50 hover:bg-muted/50'
                 }`}
               >
-                <div className="flex items-center gap-4">
-                  <div className={`text-2xl font-semibold w-12 text-left ${
-                    isSelected ? 'text-primary' : 'text-muted-foreground'
+                {isSelected && (
+                  <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary" />
+                )}
+                <div className="space-y-1">
+                  <div className={`text-3xl font-bold ${
+                    isSelected ? 'text-primary' : 'text-foreground'
                   }`}>
                     {config.symbol}
                   </div>
-                  <div className="text-left">
-                    <div className="font-semibold">{config.name}</div>
-                    <div className="text-sm text-muted-foreground">{config.code}</div>
+                  <div className="space-y-0">
+                    <p className="text-xs font-medium text-muted-foreground">{config.code}</p>
+                    <p className="text-xs text-muted-foreground/70">{config.name}</p>
                   </div>
                 </div>
-                {isSelected && (
-                  <div className="h-6 w-6 rounded-full bg-primary flex items-center justify-center">
-                    <Check className="h-4 w-4 text-primary-foreground" />
-                  </div>
-                )}
               </button>
             )
           })}
+        </div>
+      </div>
+
+      {/* Additional Settings Placeholder */}
+      <div className="space-y-6">
+        <div className="space-y-1">
+          <h2 className="text-lg font-semibold">Appearance</h2>
+          <p className="text-sm text-muted-foreground">Theme is controlled via the theme toggle in the bottom right</p>
         </div>
       </div>
     </div>
