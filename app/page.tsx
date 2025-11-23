@@ -11,6 +11,7 @@ import { AutoSync } from "@/components/auto-sync"
 import { LoginScreen } from "@/components/login-screen"
 import { WelcomeMessage } from "@/components/welcome-message"
 import { NotionOnboarding } from "@/components/notion-onboarding"
+import { FeedView } from "@/components/feed-view"
 import { CurrencyProvider } from "@/lib/currency-context"
 import { NotionProvider } from "@/lib/notion-context"
 import { UserProvider, useUser } from "@/lib/user-context"
@@ -21,7 +22,8 @@ function HomeContent() {
   const { isAuthenticated, isPending, needsOnboarding } = useUser()
   const [entries, setEntries] = useState<SavingsEntry[]>([])
   const [showAddPanel, setShowAddPanel] = useState(false)
-  const [activeView, setActiveView] = useState<'home' | 'settings'>('home')
+  const [addPanelType, setAddPanelType] = useState<'deposit' | 'withdrawal'>('deposit')
+  const [activeView, setActiveView] = useState<'home' | 'dashboard' | 'settings'>('home')
   const [isLoaded, setIsLoaded] = useState(false)
   const [isInitialLoading, setIsInitialLoading] = useState(true)
   const [summary, setSummary] = useState<SavingsSummary>({
@@ -126,9 +128,25 @@ function HomeContent() {
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
         {/* Main Content */}
         <main className="pt-16 pb-24 px-6 sm:px-8 lg:px-12">
-          <div className="max-w-5xl mx-auto space-y-12">
-            {activeView === 'home' ? (
-              <>
+          <div className="max-w-5xl mx-auto">
+            {activeView === 'home' && (
+              /* Feed View */
+              <FeedView
+                summary={summary}
+                onAddInvestment={() => {
+                  setAddPanelType('deposit')
+                  setShowAddPanel(true)
+                }}
+                onAddExpense={() => {
+                  setAddPanelType('withdrawal')
+                  setShowAddPanel(true)
+                }}
+              />
+            )}
+
+            {activeView === 'dashboard' && (
+              /* Dashboard View */
+              <div className="space-y-12">
                 {/* Welcome Message */}
                 <div className={isLoaded ? 'animate-stagger-1' : 'opacity-0'}>
                   <WelcomeMessage />
@@ -143,8 +161,10 @@ function HomeContent() {
                 <div className={isLoaded ? 'animate-stagger-3' : 'opacity-0'}>
                   <SavingsList entries={entries} onDelete={handleDeleteEntry} />
                 </div>
-              </>
-            ) : (
+              </div>
+            )}
+
+            {activeView === 'settings' && (
               /* Settings View */
               <div className="animate-scale-in">
                 <SettingsView />
@@ -169,7 +189,11 @@ function HomeContent() {
             />
             <div className="absolute inset-0 flex items-end sm:items-center justify-center p-4">
               <div className="w-full max-w-md animate-modal-slide-in" onClick={(e) => e.stopPropagation()}>
-                <AddSavingsForm onAdd={handleAddEntry} onClose={() => setShowAddPanel(false)} />
+                <AddSavingsForm
+                  onAdd={handleAddEntry}
+                  onClose={() => setShowAddPanel(false)}
+                  initialType={addPanelType}
+                />
               </div>
             </div>
           </div>

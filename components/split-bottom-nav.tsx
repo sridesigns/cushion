@@ -1,11 +1,11 @@
 "use client"
 
-import { Home, Settings, Plus } from "lucide-react"
+import { Home, LayoutDashboard, Settings, Plus } from "lucide-react"
 
 interface SplitBottomNavProps {
   onAddClick: () => void
-  activeView: 'home' | 'settings'
-  onViewChange: (view: 'home' | 'settings') => void
+  activeView: 'home' | 'dashboard' | 'settings'
+  onViewChange: (view: 'home' | 'dashboard' | 'settings') => void
 }
 
 export function SplitBottomNav({ onAddClick, activeView, onViewChange }: SplitBottomNavProps) {
@@ -23,6 +23,18 @@ export function SplitBottomNav({ onAddClick, activeView, onViewChange }: SplitBo
             }`}
           >
             <Home className="h-5 w-5" />
+          </button>
+
+          {/* Dashboard */}
+          <button
+            onClick={() => onViewChange('dashboard')}
+            className={`p-3 rounded-full transition-all duration-200 ${
+              activeView === 'dashboard'
+                ? 'bg-neutral-700/50 text-neutral-50'
+                : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-700/30'
+            }`}
+          >
+            <LayoutDashboard className="h-5 w-5" />
           </button>
 
           {/* Settings */}

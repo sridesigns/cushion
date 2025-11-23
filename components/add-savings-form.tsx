@@ -12,9 +12,10 @@ import type { SavingsEntry } from "@/lib/types"
 interface AddSavingsFormProps {
   onAdd: (entry: Omit<SavingsEntry, 'id'>) => void
   onClose: () => void
+  initialType?: 'deposit' | 'withdrawal'
 }
 
-export function AddSavingsForm({ onAdd, onClose }: AddSavingsFormProps) {
+export function AddSavingsForm({ onAdd, onClose, initialType = 'deposit' }: AddSavingsFormProps) {
   const { currency, formatCurrency } = useCurrency()
   const currencySymbol = currencyConfig[currency].symbol
   const [step, setStep] = useState(1)
@@ -22,7 +23,7 @@ export function AddSavingsForm({ onAdd, onClose }: AddSavingsFormProps) {
   const [category, setCategory] = useState("")
   const [description, setDescription] = useState("")
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
-  const [type, setType] = useState<'deposit' | 'withdrawal'>('deposit')
+  const [type, setType] = useState<'deposit' | 'withdrawal'>(initialType)
   const [showMoreAmounts, setShowMoreAmounts] = useState(false)
 
   const baseAmounts = ['500', '1000', '2000', '5000', '10000', '50000']
