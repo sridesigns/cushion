@@ -96,16 +96,24 @@ export function DashboardView({ summary, entries }: DashboardViewProps) {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-4">
         {/* Total Net Worth Card */}
         <div
-          className={`p-6 rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20 backdrop-blur-sm transition-all duration-700 ${
+          className={`p-5 rounded-xl bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20 backdrop-blur-sm transition-all duration-700 ${
             isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
           }`}
         >
-          <div className="flex items-start justify-between mb-4">
-            <div className="p-3 rounded-xl bg-primary/10 border border-primary/20">
-              <Wallet className="h-5 w-5 text-primary" />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-lg bg-primary/10 border border-primary/20">
+                <Wallet className="h-4 w-4 text-primary" />
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground mb-0.5">Total Net Worth</p>
+                <h3 className="text-2xl font-bold tracking-tight">
+                  ₹{summary.totalSavings.toLocaleString('en-IN')}
+                </h3>
+              </div>
             </div>
             {monthChange >= 0 ? (
               <div className="flex items-center gap-1 text-green-600 dark:text-green-400 text-sm font-medium">
@@ -119,66 +127,60 @@ export function DashboardView({ summary, entries }: DashboardViewProps) {
               </div>
             )}
           </div>
-          <div>
-            <p className="text-sm text-muted-foreground mb-1">Total Net Worth</p>
-            <h3 className="text-3xl font-bold tracking-tight">
-              ₹{summary.totalSavings.toLocaleString('en-IN')}
-            </h3>
-          </div>
         </div>
 
         {/* This Month Deposits */}
         <div
-          className={`p-6 rounded-2xl bg-gradient-to-br from-green-500/10 via-green-500/5 to-transparent border border-green-500/20 backdrop-blur-sm transition-all duration-700 delay-100 ${
+          className={`p-5 rounded-xl bg-gradient-to-br from-green-500/10 via-green-500/5 to-transparent border border-green-500/20 backdrop-blur-sm transition-all duration-700 delay-100 ${
             isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
           }`}
         >
-          <div className="flex items-start justify-between mb-4">
-            <div className="p-3 rounded-xl bg-green-500/10 border border-green-500/20">
-              <ArrowUpRight className="h-5 w-5 text-green-600 dark:text-green-400" />
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-lg bg-green-500/10 border border-green-500/20">
+              <ArrowUpRight className="h-4 w-4 text-green-600 dark:text-green-400" />
             </div>
-          </div>
-          <div>
-            <p className="text-sm text-muted-foreground mb-1">This Month</p>
-            <h3 className="text-3xl font-bold tracking-tight text-green-600 dark:text-green-400">
-              +₹{summary.thisMonth.toLocaleString('en-IN')}
-            </h3>
+            <div>
+              <p className="text-xs text-muted-foreground mb-0.5">This Month</p>
+              <h3 className="text-2xl font-bold tracking-tight text-green-600 dark:text-green-400">
+                +₹{summary.thisMonth.toLocaleString('en-IN')}
+              </h3>
+            </div>
           </div>
         </div>
 
         {/* Last Month Deposits */}
         <div
-          className={`p-6 rounded-2xl bg-gradient-to-br from-blue-500/10 via-blue-500/5 to-transparent border border-blue-500/20 backdrop-blur-sm transition-all duration-700 delay-200 ${
+          className={`p-5 rounded-xl bg-gradient-to-br from-blue-500/10 via-blue-500/5 to-transparent border border-blue-500/20 backdrop-blur-sm transition-all duration-700 delay-200 ${
             isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
           }`}
         >
-          <div className="flex items-start justify-between mb-4">
-            <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20">
-              <ArrowDownRight className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-lg bg-blue-500/10 border border-blue-500/20">
+              <ArrowDownRight className="h-4 w-4 text-blue-600 dark:text-blue-400" />
             </div>
-          </div>
-          <div>
-            <p className="text-sm text-muted-foreground mb-1">Last Month</p>
-            <h3 className="text-3xl font-bold tracking-tight text-blue-600 dark:text-blue-400">
-              ₹{summary.lastMonth.toLocaleString('en-IN')}
-            </h3>
+            <div>
+              <p className="text-xs text-muted-foreground mb-0.5">Last Month</p>
+              <h3 className="text-2xl font-bold tracking-tight text-blue-600 dark:text-blue-400">
+                ₹{summary.lastMonth.toLocaleString('en-IN')}
+              </h3>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Savings Trend Chart - Takes 2 columns */}
+      {/* Charts - Stacked Vertically */}
+      <div className="space-y-6">
+        {/* Savings Trend Chart */}
         <div
-          className={`lg:col-span-2 p-6 rounded-2xl bg-muted/30 border border-border/50 backdrop-blur-sm transition-all duration-700 delay-300 ${
+          className={`p-5 rounded-xl bg-muted/30 border border-border/50 backdrop-blur-sm transition-all duration-700 delay-300 ${
             isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
           }`}
         >
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold mb-1">Savings Trend</h3>
-            <p className="text-sm text-muted-foreground">Your net worth growth over time</p>
+          <div className="mb-4">
+            <h3 className="text-base font-semibold mb-0.5">Savings Trend</h3>
+            <p className="text-xs text-muted-foreground">Your net worth growth over time</p>
           </div>
-          <div className="h-64">
+          <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={trendData}>
                 <defs>
@@ -224,25 +226,25 @@ export function DashboardView({ summary, entries }: DashboardViewProps) {
           </div>
         </div>
 
-        {/* Category Breakdown - Takes 1 column */}
+        {/* Category Breakdown */}
         <div
-          className={`p-6 rounded-2xl bg-muted/30 border border-border/50 backdrop-blur-sm transition-all duration-700 delay-400 ${
+          className={`p-5 rounded-xl bg-muted/30 border border-border/50 backdrop-blur-sm transition-all duration-700 delay-400 ${
             isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
           }`}
         >
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold mb-1">Top Categories</h3>
-            <p className="text-sm text-muted-foreground">Investment breakdown</p>
+          <div className="mb-4">
+            <h3 className="text-base font-semibold mb-0.5">Top Categories</h3>
+            <p className="text-xs text-muted-foreground">Investment breakdown</p>
           </div>
-          <div className="h-64 flex items-center justify-center">
+          <div className="h-48 flex items-center justify-center">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={categoryData}
                   cx="50%"
                   cy="50%"
-                  innerRadius={60}
-                  outerRadius={90}
+                  innerRadius={50}
+                  outerRadius={70}
                   paddingAngle={5}
                   dataKey="value"
                   animationDuration={1500}
@@ -269,17 +271,17 @@ export function DashboardView({ summary, entries }: DashboardViewProps) {
             </ResponsiveContainer>
           </div>
           {/* Legend */}
-          <div className="mt-4 space-y-2">
+          <div className="mt-3 space-y-1.5">
             {categoryData.slice(0, 5).map((category, index) => (
-              <div key={category.name} className="flex items-center justify-between text-sm">
+              <div key={category.name} className="flex items-center justify-between text-xs">
                 <div className="flex items-center gap-2">
                   <div
-                    className="w-3 h-3 rounded-full"
+                    className="w-2.5 h-2.5 rounded-full flex-shrink-0"
                     style={{ backgroundColor: COLORS[index % COLORS.length] }}
                   />
-                  <span className="text-muted-foreground">{category.name}</span>
+                  <span className="text-muted-foreground truncate">{category.name}</span>
                 </div>
-                <span className="font-medium">₹{category.value.toLocaleString('en-IN')}</span>
+                <span className="font-medium ml-2 flex-shrink-0">₹{category.value.toLocaleString('en-IN')}</span>
               </div>
             ))}
           </div>

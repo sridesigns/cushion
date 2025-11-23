@@ -128,32 +128,34 @@ function HomeContent() {
         {/* Header */}
         <AppHeader onSettingsClick={() => setShowSettings(true)} />
 
-        {/* Main Content - 12 Column Grid */}
-        <main className="container px-6 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {/* Feed Section - 4 columns */}
-            <div className="lg:col-span-4">
-              <FeedView
-                summary={summary}
-                onAddInvestment={() => {
-                  setAddPanelType('deposit')
-                  setShowAddPanel(true)
-                }}
-                onAddExpense={() => {
-                  setAddPanelType('withdrawal')
-                  setShowAddPanel(true)
-                }}
-              />
-            </div>
+        {/* Main Content - 12 Column Grid with 40px padding */}
+        <main className="px-10 py-10">
+          <div className="max-w-[1600px] mx-auto">
+            <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
+              {/* Feed Section - 3 columns on xl screens */}
+              <div className="xl:col-span-3 space-y-6">
+                <FeedView
+                  summary={summary}
+                  onAddInvestment={() => {
+                    setAddPanelType('deposit')
+                    setShowAddPanel(true)
+                  }}
+                  onAddExpense={() => {
+                    setAddPanelType('withdrawal')
+                    setShowAddPanel(true)
+                  }}
+                />
+              </div>
 
-            {/* Dashboard Section - 5 columns */}
-            <div className="lg:col-span-5">
-              <DashboardView summary={summary} entries={entries} />
-            </div>
+              {/* Dashboard Section - 6 columns on xl screens */}
+              <div className="xl:col-span-6 space-y-6">
+                <DashboardView summary={summary} entries={entries} />
+              </div>
 
-            {/* Activity Section - 3 columns */}
-            <div className="lg:col-span-3">
-              <ActivityView entries={entries} />
+              {/* Activity Section - 3 columns on xl screens */}
+              <div className="xl:col-span-3 space-y-6">
+                <ActivityView entries={entries} />
+              </div>
             </div>
           </div>
         </main>
