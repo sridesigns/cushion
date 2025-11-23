@@ -10,7 +10,6 @@ interface NotionContextType {
   connect: (onSuccess?: (userName: string) => void) => void
   disconnect: () => void
   syncData: (entries: SavingsEntry[]) => Promise<void>
-  getUserInfo: () => Promise<{ name: string } | null>
 }
 
 const NotionContext = createContext<NotionContextType | undefined>(undefined)
@@ -39,46 +38,17 @@ export function NotionProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const handleMessage = async (event: MessageEvent) => {
       if (event.data.type === 'notion-oauth-success') {
-        const { access_token, workspace_name } = event.data
+        const { access_token } = event.data
         if (access_token) {
           setAccessToken(access_token)
           setIsConnected(true)
           setIsConnecting(false)
           localStorage.setItem(STORAGE_KEYS.NOTION_ACCESS_TOKEN, access_token)
 
-          // Fetch user info from our API route (avoids CORS)
-          try {
-            const response = await fetch('/api/notion/user', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ access_token }),
-            })
-
-            if (response.ok) {
-              const userData = await response.json()
-              const userName = userData.name || workspace_name || ''
-
-              // Call the success callback with user name
-              if (onSuccessCallback) {
-                onSuccessCallback(userName)
-                setOnSuccessCallback(null)
-              }
-            } else {
-              // If we can't get user info, still call callback without name
-              if (onSuccessCallback) {
-                onSuccessCallback('')
-                setOnSuccessCallback(null)
-              }
-            }
-          } catch (error) {
-            console.error('Failed to fetch user info:', error)
-            // Call callback without name if fetch fails
-            if (onSuccessCallback) {
-              onSuccessCallback('')
-              setOnSuccessCallback(null)
-            }
+          // Always call callback without name - onboarding will handle name collection
+          if (onSuccessCallback) {
+            onSuccessCallback('')
+            setOnSuccessCallback(null)
           }
         }
       } else if (event.data.type === 'notion-oauth-error') {
@@ -143,29 +113,6 @@ export function NotionProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem(STORAGE_KEYS.NOTION_DATABASE_ID)
   }
 
-  const getUserInfo = async () => {
-    if (!accessToken) return null
-
-    try {
-      const response = await fetch('/api/notion/user', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ access_token: accessToken }),
-      })
-
-      if (response.ok) {
-        const userData = await response.json()
-        return { name: userData.name || '' }
-      }
-    } catch (error) {
-      console.error('Failed to fetch user info:', error)
-    }
-
-    return null
-  }
-
   const syncData = async (entries: SavingsEntry[]) => {
     if (!isConnected || !accessToken) {
       return
@@ -201,7 +148,7 @@ export function NotionProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <NotionContext.Provider value={{ isConnected, isConnecting, connect, disconnect, syncData, getUserInfo }}>
+    <NotionContext.Provider value={{ isConnected, isConnecting, connect, disconnect, syncData }}>
       {children}
     </NotionContext.Provider>
   )
