@@ -161,30 +161,31 @@ function HomeContent() {
           </div>
         </main>
 
-        {/* Settings Overlay */}
+        {/* Settings Sidebar */}
         {showSettings && (
-          <div className="fixed inset-0 z-[60] animate-fade-in">
+          <div className="fixed inset-0 z-[60]">
+            {/* Backdrop */}
             <div
-              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-fade-in"
               onClick={() => setShowSettings(false)}
             />
-            <div className="absolute inset-0 flex items-end sm:items-center justify-center p-4">
-              <div className="w-full max-w-2xl animate-modal-slide-in" onClick={(e) => e.stopPropagation()}>
-                <div className="bg-background/95 backdrop-blur-2xl border border-border/50 rounded-3xl shadow-2xl max-h-[85vh] overflow-auto p-10">
-                  {/* Close Button */}
-                  <div className="flex justify-end mb-6">
-                    <button
-                      onClick={() => setShowSettings(false)}
-                      className="rounded-full p-2 bg-muted hover:bg-muted/80 transition-colors border border-border/50"
-                      aria-label="Close settings"
-                    >
-                      <X className="h-5 w-5" />
-                    </button>
-                  </div>
 
-                  {/* Settings Content */}
-                  <SettingsView />
+            {/* Sidebar */}
+            <div className="absolute right-0 top-0 bottom-0 w-full sm:w-[500px] bg-background/95 backdrop-blur-2xl border-l border-border/50 shadow-2xl animate-slide-in-right overflow-auto">
+              <div className="p-10">
+                {/* Close Button */}
+                <div className="flex justify-end mb-6">
+                  <button
+                    onClick={() => setShowSettings(false)}
+                    className="rounded-full p-2 bg-muted hover:bg-muted/80 transition-colors border border-border/50"
+                    aria-label="Close settings"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
                 </div>
+
+                {/* Settings Content */}
+                <SettingsView />
               </div>
             </div>
           </div>
