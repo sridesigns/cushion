@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { X } from "lucide-react"
 import { AddSavingsForm } from "@/components/add-savings-form"
 import { SettingsView } from "@/components/settings-view"
 import { AppLoader } from "@/components/app-loader"
@@ -169,8 +170,20 @@ function HomeContent() {
             />
             <div className="absolute inset-0 flex items-end sm:items-center justify-center p-4">
               <div className="w-full max-w-2xl animate-modal-slide-in" onClick={(e) => e.stopPropagation()}>
-                <div className="bg-background/95 backdrop-blur-2xl border border-border/50 rounded-3xl shadow-2xl max-h-[85vh] overflow-auto">
-                  <SettingsView />
+                <div className="relative bg-background/95 backdrop-blur-2xl border border-border/50 rounded-3xl shadow-2xl max-h-[85vh] overflow-hidden">
+                  {/* Close Button */}
+                  <button
+                    onClick={() => setShowSettings(false)}
+                    className="sticky top-0 right-0 float-right m-6 z-10 rounded-full p-2 bg-background/80 backdrop-blur-sm hover:bg-muted transition-colors border border-border/50"
+                    aria-label="Close settings"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+
+                  {/* Settings Content with Padding */}
+                  <div className="overflow-auto max-h-[85vh] px-8 pb-8 pt-2">
+                    <SettingsView />
+                  </div>
                 </div>
               </div>
             </div>

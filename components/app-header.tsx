@@ -26,7 +26,7 @@ export function AppHeader({ onSettingsClick }: AppHeaderProps) {
               {getGreeting()}{userName ? `, ${userName}` : ''}!
             </h1>
             <p className="text-xs text-muted-foreground leading-tight">
-              One line description of the tagline goes here
+              Save smart, spend wisely
             </p>
           </div>
         </div>
