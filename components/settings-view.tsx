@@ -178,20 +178,20 @@ export function SettingsView() {
           <p className="text-sm text-muted-foreground">Manage your account settings</p>
         </div>
 
-        {/* User Info */}
-        <div className="p-6 rounded-2xl border border-border bg-muted/30">
-          <div className="space-y-4">
-            <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Signed in as</p>
-              <p className="text-lg font-semibold">{userName || 'Guest'}</p>
-              <p className="text-sm text-muted-foreground capitalize">
+        {/* User Info - Compact Layout */}
+        <div className="p-5 rounded-xl border border-border bg-muted/30">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex-1">
+              <p className="text-xs text-muted-foreground mb-1">Signed in as</p>
+              <p className="text-base font-semibold">{userName || 'Guest'}</p>
+              <p className="text-xs text-muted-foreground capitalize mt-0.5">
                 {loginMethod === 'notion' ? 'Notion Account' : 'Guest Account'}
               </p>
             </div>
 
             <button
               onClick={logout}
-              className="w-full px-6 py-3 rounded-full font-medium text-sm transition-all duration-200 bg-muted hover:bg-muted/80 text-foreground border border-border flex items-center justify-center gap-2"
+              className="px-5 py-2.5 rounded-full font-medium text-sm transition-all duration-200 bg-muted hover:bg-muted/80 text-foreground border border-border flex items-center gap-2 whitespace-nowrap"
             >
               <LogOut className="h-4 w-4" />
               Log Out
