@@ -18,8 +18,12 @@ export function LoginScreen() {
   }, [])
 
   const handleNotionLogin = () => {
-    startNotionLogin()
+    // Don't call startNotionLogin - just open the popup
+    // The pending state will be set when OAuth completes
     connect((userName) => {
+      // OAuth completed and popup closed - now show loading
+      startNotionLogin()
+      // Complete the login process
       completeNotionLogin(userName)
     })
   }

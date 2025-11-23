@@ -46,18 +46,19 @@ export function NotionProvider({ children }: { children: ReactNode }) {
           setIsConnecting(false)
           localStorage.setItem(STORAGE_KEYS.NOTION_ACCESS_TOKEN, access_token)
 
-          // Fetch user info from Notion
+          // Fetch user info from our API route (avoids CORS)
           try {
-            const response = await fetch('https://api.notion.com/v1/users/me', {
+            const response = await fetch('/api/notion/user', {
+              method: 'POST',
               headers: {
-                'Authorization': `Bearer ${access_token}`,
-                'Notion-Version': '2022-06-28',
+                'Content-Type': 'application/json',
               },
+              body: JSON.stringify({ access_token }),
             })
 
             if (response.ok) {
               const userData = await response.json()
-              const userName = userData.name || workspace_name || 'User'
+              const userName = userData.name || workspace_name || ''
 
               // Call the success callback with user name
               if (onSuccessCallback) {
@@ -146,16 +147,17 @@ export function NotionProvider({ children }: { children: ReactNode }) {
     if (!accessToken) return null
 
     try {
-      const response = await fetch('https://api.notion.com/v1/users/me', {
+      const response = await fetch('/api/notion/user', {
+        method: 'POST',
         headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Notion-Version': '2022-06-28',
+          'Content-Type': 'application/json',
         },
+        body: JSON.stringify({ access_token: accessToken }),
       })
 
       if (response.ok) {
         const userData = await response.json()
-        return { name: userData.name || 'User' }
+        return { name: userData.name || '' }
       }
     } catch (error) {
       console.error('Failed to fetch user info:', error)

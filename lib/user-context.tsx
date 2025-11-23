@@ -48,7 +48,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }
 
   const startNotionLogin = () => {
-    // Set pending state while waiting for OAuth
+    // Set pending state - OAuth has completed, now loading
     setIsPending(true)
   }
 
@@ -63,6 +63,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       setUserName(name)
       setIsAuthenticated(true)
       setIsPending(false)
+      setNeedsOnboarding(false)
     } else {
       // Need to ask for name
       setNeedsOnboarding(true)
