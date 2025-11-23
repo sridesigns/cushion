@@ -94,9 +94,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }
 
   const getGreeting = () => {
-    if (!loginTime) return 'Hello'
-
-    const hour = loginTime.getHours()
+    // Use current time, not login time, for accurate greeting
+    const now = new Date()
+    const hour = now.getHours()
 
     if (hour >= 5 && hour < 12) {
       return 'Good morning'

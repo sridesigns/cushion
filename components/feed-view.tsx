@@ -11,6 +11,48 @@ interface FeedViewProps {
   onAddExpense: () => void
 }
 
+/**
+ * Generates a natural language summary of net worth changes
+ * @param totalSavings - Current total net worth
+ * @param changeAmount - Amount changed (positive or negative)
+ * @param comparisonPeriod - Period to compare against (default: 'yesterday')
+ * @returns Object with summary text and metadata
+ */
+function generateNetWorthSummary(
+  totalSavings: number,
+  changeAmount: number,
+  comparisonPeriod: string = 'yesterday'
+) {
+  const changePercentage = totalSavings > 0
+    ? Math.abs((changeAmount / totalSavings) * 100)
+    : 0
+  const isNeutral = Math.abs(changeAmount) < 0.01
+  const isPositive = changeAmount > 0
+
+  let summaryText = ''
+  let icon: 'up' | 'down' | 'neutral' = 'neutral'
+
+  if (isNeutral) {
+    summaryText = `Your net worth is ₹${totalSavings.toLocaleString('en-IN')} with no change compared to ${comparisonPeriod}.`
+    icon = 'neutral'
+  } else if (isPositive) {
+    summaryText = `Your net worth is ₹${totalSavings.toLocaleString('en-IN')} and has increased by ${changePercentage.toFixed(1)}% compared to ${comparisonPeriod}.`
+    icon = 'up'
+  } else {
+    summaryText = `Your net worth is ₹${totalSavings.toLocaleString('en-IN')} and has decreased by ${changePercentage.toFixed(1)}% compared to ${comparisonPeriod}.`
+    icon = 'down'
+  }
+
+  return {
+    text: summaryText,
+    icon,
+    changeAmount,
+    changePercentage,
+    isPositive,
+    isNeutral,
+  }
+}
+
 export function FeedView({ summary, onAddInvestment, onAddExpense }: FeedViewProps) {
   const { userName, getGreeting } = useUser()
   const [showGreeting, setShowGreeting] = useState(false)
@@ -34,12 +76,11 @@ export function FeedView({ summary, onAddInvestment, onAddExpense }: FeedViewPro
   }, [])
 
   // Calculate day-over-day change (mock for now - would compare with yesterday's data)
+  // TODO: Replace with actual historical data comparison
   const dailyChange = summary.thisMonth * 0.05 // Placeholder calculation
-  const changePercentage = summary.totalSavings > 0
-    ? ((dailyChange / summary.totalSavings) * 100).toFixed(1)
-    : '0.0'
-  const isPositive = dailyChange >= 0
-  const isNeutral = Math.abs(dailyChange) < 0.01
+
+  // Generate natural language summary
+  const netWorthSummary = generateNetWorthSummary(summary.totalSavings, dailyChange, 'yesterday')
 
   return (
     <div className="min-h-[80vh] flex flex-col justify-center py-12">
@@ -59,7 +100,7 @@ export function FeedView({ summary, onAddInvestment, onAddExpense }: FeedViewPro
           </div>
         </div>
 
-        {/* Net Worth Summary Card */}
+        {/* Net Worth Summary - Natural Language */}
         <div
           className={`transition-all duration-700 ease-out delay-100 ${
             showSummary
@@ -67,49 +108,31 @@ export function FeedView({ summary, onAddInvestment, onAddExpense }: FeedViewPro
               : 'opacity-0 translate-y-8'
           }`}
         >
-          <div className="p-6 rounded-2xl bg-muted/30 border border-border/50 backdrop-blur-sm">
-            <div className="space-y-4">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Total Net Worth</p>
-                <h2 className="text-4xl font-bold tracking-tight">
-                  ₹{summary.totalSavings.toLocaleString('en-IN', {
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 0
-                  })}
-                </h2>
-              </div>
-
-              {/* Day Change */}
-              {!isNeutral && (
-                <div className="flex items-center gap-2">
-                  {isPositive ? (
-                    <div className="flex items-center gap-1.5 text-green-600 dark:text-green-400">
-                      <TrendingUp className="h-4 w-4" />
-                      <span className="text-sm font-medium">
-                        +₹{Math.abs(dailyChange).toLocaleString('en-IN')} ({changePercentage}%)
-                      </span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-1.5 text-red-600 dark:text-red-400">
-                      <TrendingDown className="h-4 w-4" />
-                      <span className="text-sm font-medium">
-                        -₹{Math.abs(dailyChange).toLocaleString('en-IN')} ({changePercentage}%)
-                      </span>
-                    </div>
-                  )}
-                  <span className="text-xs text-muted-foreground">vs yesterday</span>
+          <div className="flex items-start gap-3">
+            {/* Icon */}
+            <div className="mt-0.5 flex-shrink-0">
+              {netWorthSummary.icon === 'up' && (
+                <div className="p-2 rounded-full bg-green-500/10">
+                  <TrendingUp className="h-4 w-4 text-green-600 dark:text-green-400" />
                 </div>
               )}
-
-              {isNeutral && (
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1.5 text-muted-foreground">
-                    <Minus className="h-4 w-4" />
-                    <span className="text-sm font-medium">No change</span>
-                  </div>
-                  <span className="text-xs text-muted-foreground">vs yesterday</span>
+              {netWorthSummary.icon === 'down' && (
+                <div className="p-2 rounded-full bg-red-500/10">
+                  <TrendingDown className="h-4 w-4 text-red-600 dark:text-red-400" />
                 </div>
               )}
+              {netWorthSummary.icon === 'neutral' && (
+                <div className="p-2 rounded-full bg-muted/50">
+                  <Minus className="h-4 w-4 text-muted-foreground" />
+                </div>
+              )}
+            </div>
+
+            {/* Text Summary */}
+            <div className="flex-1">
+              <p className="text-base leading-relaxed text-foreground/90">
+                {netWorthSummary.text}
+              </p>
             </div>
           </div>
         </div>
