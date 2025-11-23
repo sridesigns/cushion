@@ -3,15 +3,14 @@
 import { useState, useEffect } from "react"
 import { SplitBottomNav } from "@/components/split-bottom-nav"
 import { AddSavingsForm } from "@/components/add-savings-form"
-import { SavingsSummaryCards } from "@/components/savings-summary"
 import { SavingsList } from "@/components/savings-list"
 import { SettingsView } from "@/components/settings-view"
 import { AppLoader } from "@/components/app-loader"
 import { AutoSync } from "@/components/auto-sync"
 import { LoginScreen } from "@/components/login-screen"
-import { WelcomeMessage } from "@/components/welcome-message"
 import { NotionOnboarding } from "@/components/notion-onboarding"
 import { FeedView } from "@/components/feed-view"
+import { DashboardView } from "@/components/dashboard-view"
 import { CurrencyProvider } from "@/lib/currency-context"
 import { NotionProvider } from "@/lib/notion-context"
 import { UserProvider, useUser } from "@/lib/user-context"
@@ -146,20 +145,16 @@ function HomeContent() {
 
             {activeView === 'dashboard' && (
               /* Dashboard View */
-              <div className="space-y-12">
-                {/* Welcome Message */}
-                <div className={isLoaded ? 'animate-stagger-1' : 'opacity-0'}>
-                  <WelcomeMessage />
-                </div>
-
-                {/* Summary Cards */}
-                <div className={isLoaded ? 'animate-stagger-2' : 'opacity-0'}>
-                  <SavingsSummaryCards summary={summary} />
-                </div>
+              <div className="space-y-8">
+                {/* Rich Dashboard with Charts */}
+                <DashboardView summary={summary} entries={entries} />
 
                 {/* Transactions List */}
-                <div className={isLoaded ? 'animate-stagger-3' : 'opacity-0'}>
-                  <SavingsList entries={entries} onDelete={handleDeleteEntry} />
+                <div className={isLoaded ? 'animate-stagger-4' : 'opacity-0'}>
+                  <div className="p-6 rounded-2xl bg-muted/30 border border-border/50 backdrop-blur-sm">
+                    <h3 className="text-lg font-semibold mb-4">Recent Transactions</h3>
+                    <SavingsList entries={entries} onDelete={handleDeleteEntry} />
+                  </div>
                 </div>
               </div>
             )}

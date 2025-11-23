@@ -108,9 +108,9 @@ export function FeedView({ summary, onAddInvestment, onAddExpense }: FeedViewPro
               : 'opacity-0 translate-y-8'
           }`}
         >
-          <div className="flex items-start gap-3">
+          <div className="flex items-center gap-3">
             {/* Icon */}
-            <div className="mt-0.5 flex-shrink-0">
+            <div className="flex-shrink-0">
               {netWorthSummary.icon === 'up' && (
                 <div className="p-2 rounded-full bg-green-500/10">
                   <TrendingUp className="h-4 w-4 text-green-600 dark:text-green-400" />
