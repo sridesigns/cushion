@@ -148,19 +148,18 @@ export function FeedView({ summary, onAddInvestment, onAddExpense }: FeedViewPro
             : 'opacity-0 translate-y-8'
         }`}
       >
-        <div className="grid grid-cols-1 gap-3">
+        <div className="grid grid-cols-2 gap-2">
           {/* Record Investment */}
           <button
             onClick={onAddInvestment}
-            className="group relative p-4 rounded-xl border border-border hover:border-primary/50 bg-muted/30 hover:bg-muted/50 transition-all duration-200 text-left"
+            className="group relative p-3 rounded-xl border border-border hover:border-primary/50 bg-muted/30 hover:bg-muted/50 transition-all duration-200"
           >
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col items-center gap-2 text-center">
               <div className="p-2 rounded-lg bg-primary/10 border border-primary/20 group-hover:bg-primary/20 transition-colors">
                 <Plus className="h-4 w-4 text-primary" />
               </div>
-              <div className="flex-1">
-                <h3 className="text-sm font-semibold">Record Investment</h3>
-                <p className="text-xs text-muted-foreground">Track your savings</p>
+              <div>
+                <h3 className="text-xs font-semibold">Investment</h3>
               </div>
             </div>
           </button>
@@ -168,15 +167,14 @@ export function FeedView({ summary, onAddInvestment, onAddExpense }: FeedViewPro
           {/* Record Expense */}
           <button
             onClick={onAddExpense}
-            className="group relative p-4 rounded-xl border border-border hover:border-primary/50 bg-muted/30 hover:bg-muted/50 transition-all duration-200 text-left"
+            className="group relative p-3 rounded-xl border border-border hover:border-primary/50 bg-muted/30 hover:bg-muted/50 transition-all duration-200"
           >
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col items-center gap-2 text-center">
               <div className="p-2 rounded-lg bg-muted border border-border group-hover:bg-muted/80 transition-colors">
                 <Receipt className="h-4 w-4 text-foreground" />
               </div>
-              <div className="flex-1">
-                <h3 className="text-sm font-semibold">Record Expense</h3>
-                <p className="text-xs text-muted-foreground">Log your spending</p>
+              <div>
+                <h3 className="text-xs font-semibold">Expense</h3>
               </div>
             </div>
           </button>

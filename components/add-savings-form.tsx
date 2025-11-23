@@ -5,6 +5,7 @@ import { X, ArrowRight, ArrowLeft, Calendar as CalendarIcon, Tag, FileText } fro
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { ModernDatePicker } from "@/components/modern-date-picker"
 import { useCurrency, currencyConfig } from "@/lib/currency-context"
 import { validateAmount, validateCategory, validateDescription, validateDate } from "@/lib/validation"
 import type { SavingsEntry } from "@/lib/types"
@@ -22,7 +23,7 @@ export function AddSavingsForm({ onAdd, onClose, initialType = 'deposit' }: AddS
   const [amount, setAmount] = useState("")
   const [category, setCategory] = useState("")
   const [description, setDescription] = useState("")
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0])
+  const [date, setDate] = useState(new Date())
   const [type, setType] = useState<'deposit' | 'withdrawal'>(initialType)
   const [showMoreAmounts, setShowMoreAmounts] = useState(false)
 
@@ -37,7 +38,7 @@ export function AddSavingsForm({ onAdd, onClose, initialType = 'deposit' }: AddS
     const validatedAmount = validateAmount(amount)
     const validatedCategory = validateCategory(category)
     const validatedDescription = validateDescription(description)
-    const validatedDate = validateDate(date)
+    const validatedDate = validateDate(date.toISOString())
 
     if (!validatedAmount || !validatedCategory || !validatedDate) {
       console.error('Invalid input data')
@@ -56,7 +57,7 @@ export function AddSavingsForm({ onAdd, onClose, initialType = 'deposit' }: AddS
     setAmount("")
     setCategory("")
     setDescription("")
-    setDate(new Date().toISOString().split('T')[0])
+    setDate(new Date())
     setType('deposit')
     setStep(1)
   }
@@ -281,13 +282,13 @@ export function AddSavingsForm({ onAdd, onClose, initialType = 'deposit' }: AddS
                   <CalendarIcon className="h-4 w-4" />
                   Date
                 </Label>
-                <Input
-                  id="date"
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  className="h-12 bg-muted/30"
-                />
+                <div className="p-4 rounded-xl border border-border bg-muted/30">
+                  <ModernDatePicker
+                    selectedDate={date}
+                    onDateSelect={setDate}
+                    maxDate={new Date()}
+                  />
+                </div>
               </div>
 
               {/* Summary Card */}

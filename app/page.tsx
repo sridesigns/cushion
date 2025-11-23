@@ -12,6 +12,7 @@ import { AppHeader } from "@/components/app-header"
 import { FeedView } from "@/components/feed-view"
 import { DashboardView } from "@/components/dashboard-view"
 import { ActivityView } from "@/components/activity-view"
+import { ExpenseTrackerFlow } from "@/components/expense-tracker-flow"
 import { CurrencyProvider } from "@/lib/currency-context"
 import { NotionProvider } from "@/lib/notion-context"
 import { UserProvider, useUser } from "@/lib/user-context"
@@ -23,6 +24,7 @@ function HomeContent() {
   const [entries, setEntries] = useState<SavingsEntry[]>([])
   const [showAddPanel, setShowAddPanel] = useState(false)
   const [addPanelType, setAddPanelType] = useState<'deposit' | 'withdrawal'>('deposit')
+  const [showExpenseTracker, setShowExpenseTracker] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
   const [isInitialLoading, setIsInitialLoading] = useState(true)
@@ -102,6 +104,24 @@ function HomeContent() {
     setShowAddPanel(false)
   }
 
+  const handleExpenseSubmit = (expense: {
+    amount: number
+    category: string
+    date: Date
+    note?: string
+  }) => {
+    const newEntry: SavingsEntry = {
+      id: Date.now().toString(),
+      amount: expense.amount,
+      type: 'withdrawal',
+      category: expense.category,
+      date: expense.date.toISOString(),
+      description: expense.note || '',
+    }
+    setEntries([newEntry, ...entries])
+    setShowExpenseTracker(false)
+  }
+
   const handleDeleteEntry = (id: string) => {
     setEntries(entries.filter(entry => entry.id !== id))
   }
@@ -142,8 +162,7 @@ function HomeContent() {
                     setShowAddPanel(true)
                   }}
                   onAddExpense={() => {
-                    setAddPanelType('withdrawal')
-                    setShowAddPanel(true)
+                    setShowExpenseTracker(true)
                   }}
                 />
               </div>
@@ -209,6 +228,13 @@ function HomeContent() {
             </div>
           </div>
         )}
+
+        {/* Expense Tracker Flow */}
+        <ExpenseTrackerFlow
+          isOpen={showExpenseTracker}
+          onClose={() => setShowExpenseTracker(false)}
+          onSubmit={handleExpenseSubmit}
+        />
       </div>
     </>
   )
