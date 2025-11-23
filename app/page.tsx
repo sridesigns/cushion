@@ -210,15 +210,17 @@ function HomeContent() {
           </div>
         )}
 
-        {/* Add Panel */}
+        {/* Add Panel - Floating Sidebar */}
         {showAddPanel && (
-          <div className="fixed inset-0 z-[60] animate-fade-in">
+          <div className="fixed inset-0 z-[60]">
+            {/* Backdrop */}
             <div
-              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-fade-in"
               onClick={() => setShowAddPanel(false)}
             />
-            <div className="absolute inset-0 flex items-end sm:items-center justify-center p-4">
-              <div className="w-full max-w-md animate-modal-slide-in" onClick={(e) => e.stopPropagation()}>
+            {/* Floating Sidebar with 4px margins */}
+            <div className="absolute inset-1 right-0 left-auto w-full sm:w-[500px] sm:max-w-[calc(100vw-8px)]">
+              <div className="h-full bg-background/95 backdrop-blur-2xl border border-border/50 rounded-2xl shadow-2xl animate-slide-in-right overflow-hidden">
                 <AddSavingsForm
                   onAdd={handleAddEntry}
                   onClose={() => setShowAddPanel(false)}

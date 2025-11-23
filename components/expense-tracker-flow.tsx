@@ -99,11 +99,11 @@ export function ExpenseTrackerFlow({ isOpen, onClose, onSubmit }: ExpenseTracker
         onClick={handleClose}
       />
 
-      {/* Bottom Sheet */}
-      <div className="absolute bottom-0 left-0 right-0 bg-background/95 backdrop-blur-2xl border-t border-border/50 rounded-t-3xl shadow-2xl animate-slide-up max-h-[85vh] overflow-hidden">
-        <div className="relative">
+      {/* Floating Sidebar with 4px margins */}
+      <div className="absolute inset-1 right-0 left-auto w-full sm:w-[500px] sm:max-w-[calc(100vw-8px)]">
+        <div className="h-full bg-background/95 backdrop-blur-2xl border border-border/50 rounded-2xl shadow-2xl animate-slide-in-right overflow-hidden flex flex-col">
           {/* Progress Bar */}
-          <div className="absolute top-0 left-0 right-0 h-1 bg-muted">
+          <div className="flex-shrink-0 h-1 bg-muted">
             <div
               className="h-full bg-primary transition-all duration-500 ease-out"
               style={{
@@ -113,7 +113,7 @@ export function ExpenseTrackerFlow({ isOpen, onClose, onSubmit }: ExpenseTracker
           </div>
 
           {/* Header */}
-          <div className="flex items-center justify-between px-6 pt-6 pb-4">
+          <div className="flex-shrink-0 flex items-center justify-between px-6 pt-6 pb-4">
             <div>
               <h2 className="text-lg font-semibold">Track Expense</h2>
               <p className="text-xs text-muted-foreground mt-0.5">
@@ -132,8 +132,8 @@ export function ExpenseTrackerFlow({ isOpen, onClose, onSubmit }: ExpenseTracker
             </button>
           </div>
 
-          {/* Content */}
-          <div className="px-6 pb-6 overflow-y-auto max-h-[calc(85vh-120px)]">
+          {/* Content - Scrollable */}
+          <div className="flex-1 overflow-y-auto px-6 pb-6">
             {/* Step 1: Amount */}
             {step === 'amount' && (
               <div className="space-y-6 animate-slide-in">
