@@ -84,7 +84,17 @@ export function DashboardView({ summary, entries }: DashboardViewProps) {
     : '0.0'
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
+      {/* Section Header */}
+      <div
+        className={`transition-all duration-700 ${
+          isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+        }`}
+      >
+        <h2 className="text-lg font-semibold mb-1">Dashboard</h2>
+        <p className="text-sm text-muted-foreground">Analytics & insights</p>
+      </div>
+
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Total Net Worth Card */}

@@ -1,16 +1,16 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { SplitBottomNav } from "@/components/split-bottom-nav"
 import { AddSavingsForm } from "@/components/add-savings-form"
-import { SavingsList } from "@/components/savings-list"
 import { SettingsView } from "@/components/settings-view"
 import { AppLoader } from "@/components/app-loader"
 import { AutoSync } from "@/components/auto-sync"
 import { LoginScreen } from "@/components/login-screen"
 import { NotionOnboarding } from "@/components/notion-onboarding"
+import { AppHeader } from "@/components/app-header"
 import { FeedView } from "@/components/feed-view"
 import { DashboardView } from "@/components/dashboard-view"
+import { ActivityView } from "@/components/activity-view"
 import { CurrencyProvider } from "@/lib/currency-context"
 import { NotionProvider } from "@/lib/notion-context"
 import { UserProvider, useUser } from "@/lib/user-context"
@@ -22,7 +22,7 @@ function HomeContent() {
   const [entries, setEntries] = useState<SavingsEntry[]>([])
   const [showAddPanel, setShowAddPanel] = useState(false)
   const [addPanelType, setAddPanelType] = useState<'deposit' | 'withdrawal'>('deposit')
-  const [activeView, setActiveView] = useState<'home' | 'dashboard' | 'settings'>('home')
+  const [showSettings, setShowSettings] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
   const [isInitialLoading, setIsInitialLoading] = useState(true)
   const [summary, setSummary] = useState<SavingsSummary>({
@@ -125,11 +125,14 @@ function HomeContent() {
       <AutoSync entries={entries} />
       {isInitialLoading && <AppLoader onLoadComplete={handleLoadComplete} />}
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-        {/* Main Content */}
-        <main className="pt-16 pb-24 px-6 sm:px-8 lg:px-12">
-          <div className="max-w-5xl mx-auto">
-            {activeView === 'home' && (
-              /* Feed View */
+        {/* Header */}
+        <AppHeader onSettingsClick={() => setShowSettings(true)} />
+
+        {/* Main Content - 12 Column Grid */}
+        <main className="container px-6 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            {/* Feed Section - 4 columns */}
+            <div className="lg:col-span-4">
               <FeedView
                 summary={summary}
                 onAddInvestment={() => {
@@ -141,39 +144,36 @@ function HomeContent() {
                   setShowAddPanel(true)
                 }}
               />
-            )}
+            </div>
 
-            {activeView === 'dashboard' && (
-              /* Dashboard View */
-              <div className="space-y-8">
-                {/* Rich Dashboard with Charts */}
-                <DashboardView summary={summary} entries={entries} />
+            {/* Dashboard Section - 5 columns */}
+            <div className="lg:col-span-5">
+              <DashboardView summary={summary} entries={entries} />
+            </div>
 
-                {/* Transactions List */}
-                <div className={isLoaded ? 'animate-stagger-4' : 'opacity-0'}>
-                  <div className="p-6 rounded-2xl bg-muted/30 border border-border/50 backdrop-blur-sm">
-                    <h3 className="text-lg font-semibold mb-4">Recent Transactions</h3>
-                    <SavingsList entries={entries} onDelete={handleDeleteEntry} />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {activeView === 'settings' && (
-              /* Settings View */
-              <div className="animate-scale-in">
-                <SettingsView />
-              </div>
-            )}
+            {/* Activity Section - 3 columns */}
+            <div className="lg:col-span-3">
+              <ActivityView entries={entries} />
+            </div>
           </div>
         </main>
 
-        {/* Bottom Navigation */}
-        <SplitBottomNav
-          onAddClick={() => setShowAddPanel(true)}
-          activeView={activeView}
-          onViewChange={setActiveView}
-        />
+        {/* Settings Overlay */}
+        {showSettings && (
+          <div className="fixed inset-0 z-[60] animate-fade-in">
+            <div
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+              onClick={() => setShowSettings(false)}
+            />
+            <div className="absolute inset-0 flex items-end sm:items-center justify-center p-4">
+              <div className="w-full max-w-2xl animate-modal-slide-in" onClick={(e) => e.stopPropagation()}>
+                <div className="bg-background/95 backdrop-blur-2xl border border-border/50 rounded-3xl shadow-2xl max-h-[85vh] overflow-auto">
+                  <SettingsView />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Add Panel */}
         {showAddPanel && (
