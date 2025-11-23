@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { TrendingUp, TrendingDown, Wallet, ArrowUpRight, ArrowDownRight, PieChart as PieChartIcon } from 'lucide-react'
-import { AreaChart, Area, PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts'
+import { AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from 'recharts'
 import type { SavingsEntry, SavingsSummary } from '@/lib/types'
 
 interface DashboardViewProps {
@@ -65,23 +65,51 @@ function generateCategoryData(entries: SavingsEntry[]) {
   return data
 }
 
+// Generate monthly savings vs expenses data
+function generateMonthlySavingsExpenses(entries: SavingsEntry[]) {
+  const monthlyData: Record<string, { month: string; savings: number; expenses: number }> = {}
+
+  entries.forEach((entry) => {
+    const date = new Date(entry.date)
+    const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
+    const monthDisplay = date.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })
+
+    if (!monthlyData[monthKey]) {
+      monthlyData[monthKey] = { month: monthDisplay, savings: 0, expenses: 0 }
+    }
+
+    if (entry.type === 'deposit') {
+      monthlyData[monthKey].savings += entry.amount
+    } else {
+      monthlyData[monthKey].expenses += entry.amount
+    }
+  })
+
+  const data = Object.entries(monthlyData)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([, value]) => value)
+
+  if (data.length === 0) {
+    const now = new Date()
+    const monthDisplay = now.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })
+    return [{ month: monthDisplay, savings: 0, expenses: 0 }]
+  }
+
+  return data
+}
+
 const COLORS = ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b', '#ef4444']
 
 export function DashboardView({ summary, entries }: DashboardViewProps) {
   const [isLoaded, setIsLoaded] = useState(false)
   const trendData = generateTrendData(entries)
   const categoryData = generateCategoryData(entries)
+  const monthlyData = generateMonthlySavingsExpenses(entries)
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoaded(true), 100)
     return () => clearTimeout(timer)
   }, [])
-
-  // Calculate month-over-month change
-  const monthChange = summary.thisMonth - summary.lastMonth
-  const monthChangePercentage = summary.lastMonth > 0
-    ? ((monthChange / summary.lastMonth) * 100).toFixed(1)
-    : '0.0'
 
   return (
     <div className="space-y-6">
@@ -95,90 +123,17 @@ export function DashboardView({ summary, entries }: DashboardViewProps) {
         <p className="text-sm text-muted-foreground">Analytics & insights</p>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 gap-4">
-        {/* Total Net Worth Card */}
-        <div
-          className={`p-5 rounded-xl bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20 backdrop-blur-sm transition-all duration-700 ${
-            isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-          }`}
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-lg bg-primary/10 border border-primary/20">
-                <Wallet className="h-4 w-4 text-primary" />
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground mb-0.5">Total Net Worth</p>
-                <h3 className="text-2xl font-bold tracking-tight">
-                  ₹{summary.totalSavings.toLocaleString('en-IN')}
-                </h3>
-              </div>
-            </div>
-            {monthChange >= 0 ? (
-              <div className="flex items-center gap-1 text-green-600 dark:text-green-400 text-sm font-medium">
-                <TrendingUp className="h-4 w-4" />
-                <span>{monthChangePercentage}%</span>
-              </div>
-            ) : (
-              <div className="flex items-center gap-1 text-red-600 dark:text-red-400 text-sm font-medium">
-                <TrendingDown className="h-4 w-4" />
-                <span>{Math.abs(parseFloat(monthChangePercentage))}%</span>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* This Month Deposits */}
-        <div
-          className={`p-5 rounded-xl bg-gradient-to-br from-green-500/10 via-green-500/5 to-transparent border border-green-500/20 backdrop-blur-sm transition-all duration-700 delay-100 ${
-            isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-          }`}
-        >
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-lg bg-green-500/10 border border-green-500/20">
-              <ArrowUpRight className="h-4 w-4 text-green-600 dark:text-green-400" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground mb-0.5">This Month</p>
-              <h3 className="text-2xl font-bold tracking-tight text-green-600 dark:text-green-400">
-                +₹{summary.thisMonth.toLocaleString('en-IN')}
-              </h3>
-            </div>
-          </div>
-        </div>
-
-        {/* Last Month Deposits */}
-        <div
-          className={`p-5 rounded-xl bg-gradient-to-br from-blue-500/10 via-blue-500/5 to-transparent border border-blue-500/20 backdrop-blur-sm transition-all duration-700 delay-200 ${
-            isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-          }`}
-        >
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-lg bg-blue-500/10 border border-blue-500/20">
-              <ArrowDownRight className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground mb-0.5">Last Month</p>
-              <h3 className="text-2xl font-bold tracking-tight text-blue-600 dark:text-blue-400">
-                ₹{summary.lastMonth.toLocaleString('en-IN')}
-              </h3>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Charts - Stacked Vertically */}
       <div className="space-y-6">
-        {/* Savings Trend Chart */}
+        {/* Net Worth Growth Chart */}
         <div
-          className={`p-5 rounded-xl bg-muted/30 border border-border/50 backdrop-blur-sm transition-all duration-700 delay-300 ${
+          className={`p-5 rounded-xl bg-muted/30 border border-border/50 backdrop-blur-sm transition-all duration-700 ${
             isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
           }`}
         >
           <div className="mb-4">
-            <h3 className="text-base font-semibold mb-0.5">Savings Trend</h3>
-            <p className="text-xs text-muted-foreground">Your net worth growth over time</p>
+            <h3 className="text-base font-semibold mb-0.5">Net Worth Growth</h3>
+            <p className="text-xs text-muted-foreground">Your net worth over time</p>
           </div>
           <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
@@ -226,9 +181,68 @@ export function DashboardView({ summary, entries }: DashboardViewProps) {
           </div>
         </div>
 
+        {/* Monthly Savings vs Expenses Chart */}
+        <div
+          className={`p-5 rounded-xl bg-muted/30 border border-border/50 backdrop-blur-sm transition-all duration-700 delay-100 ${
+            isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+          }`}
+        >
+          <div className="mb-4">
+            <h3 className="text-base font-semibold mb-0.5">Monthly Overview</h3>
+            <p className="text-xs text-muted-foreground">Savings and expenses by month</p>
+          </div>
+          <div className="h-56">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={monthlyData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+                <XAxis
+                  dataKey="month"
+                  stroke="hsl(var(--muted-foreground))"
+                  fontSize={12}
+                  tickLine={false}
+                />
+                <YAxis
+                  stroke="hsl(var(--muted-foreground))"
+                  fontSize={12}
+                  tickLine={false}
+                  tickFormatter={(value) => `₹${(value / 1000).toFixed(0)}k`}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'hsl(var(--background))',
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: '12px',
+                    padding: '8px 12px',
+                  }}
+                  formatter={(value: number) => `₹${value.toLocaleString('en-IN')}`}
+                  labelStyle={{ color: 'hsl(var(--foreground))' }}
+                />
+                <Legend
+                  wrapperStyle={{ paddingTop: '10px' }}
+                  formatter={(value) => value.charAt(0).toUpperCase() + value.slice(1)}
+                />
+                <Bar
+                  dataKey="savings"
+                  fill="hsl(var(--primary))"
+                  radius={[8, 8, 0, 0]}
+                  animationDuration={1500}
+                  animationEasing="ease-in-out"
+                />
+                <Bar
+                  dataKey="expenses"
+                  fill="#ef4444"
+                  radius={[8, 8, 0, 0]}
+                  animationDuration={1500}
+                  animationEasing="ease-in-out"
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
         {/* Category Breakdown */}
         <div
-          className={`p-5 rounded-xl bg-muted/30 border border-border/50 backdrop-blur-sm transition-all duration-700 delay-400 ${
+          className={`p-5 rounded-xl bg-muted/30 border border-border/50 backdrop-blur-sm transition-all duration-700 delay-200 ${
             isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
           }`}
         >

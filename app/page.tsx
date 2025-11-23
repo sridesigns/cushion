@@ -157,6 +157,7 @@ function HomeContent() {
               <div className="xl:col-span-3 space-y-6">
                 <FeedView
                   summary={summary}
+                  entries={entries}
                   onAddInvestment={() => {
                     setAddPanelType('deposit')
                     setShowAddPanel(true)

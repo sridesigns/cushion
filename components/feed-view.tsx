@@ -2,67 +2,28 @@
 
 import { useState, useEffect } from 'react'
 import { useUser } from '@/lib/user-context'
-import { TrendingUp, TrendingDown, Minus, Plus, Receipt } from 'lucide-react'
-import type { SavingsSummary } from '@/lib/types'
+import { TrendingUp, TrendingDown, Wallet, ArrowUpRight, ArrowDownRight, Plus, Receipt } from 'lucide-react'
+import { useCurrency } from '@/lib/currency-context'
+import type { SavingsSummary, SavingsEntry } from '@/lib/types'
 
 interface FeedViewProps {
   summary: SavingsSummary
+  entries: SavingsEntry[]
   onAddInvestment: () => void
   onAddExpense: () => void
 }
 
-/**
- * Generates a natural language summary of net worth changes
- * @param totalSavings - Current total net worth
- * @param changeAmount - Amount changed (positive or negative)
- * @param comparisonPeriod - Period to compare against (default: 'yesterday')
- * @returns Object with summary text and metadata
- */
-function generateNetWorthSummary(
-  totalSavings: number,
-  changeAmount: number,
-  comparisonPeriod: string = 'yesterday'
-) {
-  const changePercentage = totalSavings > 0
-    ? Math.abs((changeAmount / totalSavings) * 100)
-    : 0
-  const isNeutral = Math.abs(changeAmount) < 0.01
-  const isPositive = changeAmount > 0
-
-  let summaryText = ''
-  let icon: 'up' | 'down' | 'neutral' = 'neutral'
-
-  if (isNeutral) {
-    summaryText = `Your net worth is ₹${totalSavings.toLocaleString('en-IN')} with no change compared to ${comparisonPeriod}.`
-    icon = 'neutral'
-  } else if (isPositive) {
-    summaryText = `Your net worth is ₹${totalSavings.toLocaleString('en-IN')} and has increased by ${changePercentage.toFixed(1)}% compared to ${comparisonPeriod}.`
-    icon = 'up'
-  } else {
-    summaryText = `Your net worth is ₹${totalSavings.toLocaleString('en-IN')} and has decreased by ${changePercentage.toFixed(1)}% compared to ${comparisonPeriod}.`
-    icon = 'down'
-  }
-
-  return {
-    text: summaryText,
-    icon,
-    changeAmount,
-    changePercentage,
-    isPositive,
-    isNeutral,
-  }
-}
-
-export function FeedView({ summary, onAddInvestment, onAddExpense }: FeedViewProps) {
+export function FeedView({ summary, entries, onAddInvestment, onAddExpense }: FeedViewProps) {
+  const { formatCurrency } = useCurrency()
   const [showSummary, setShowSummary] = useState(false)
-  const [showQuestion, setShowQuestion] = useState(false)
+  const [showCards, setShowCards] = useState(false)
   const [showActions, setShowActions] = useState(false)
 
   // Progressive reveal animation
   useEffect(() => {
     const timer1 = setTimeout(() => setShowSummary(true), 100)
-    const timer2 = setTimeout(() => setShowQuestion(true), 600)
-    const timer3 = setTimeout(() => setShowActions(true), 900)
+    const timer2 = setTimeout(() => setShowCards(true), 400)
+    const timer3 = setTimeout(() => setShowActions(true), 700)
 
     return () => {
       clearTimeout(timer1)
@@ -71,12 +32,24 @@ export function FeedView({ summary, onAddInvestment, onAddExpense }: FeedViewPro
     }
   }, [])
 
-  // Calculate day-over-day change (mock for now - would compare with yesterday's data)
-  // TODO: Replace with actual historical data comparison
-  const dailyChange = summary.thisMonth * 0.05 // Placeholder calculation
+  // Calculate this month's savings and expenses
+  const now = new Date()
+  const currentMonth = now.getMonth()
+  const currentYear = now.getFullYear()
 
-  // Generate natural language summary
-  const netWorthSummary = generateNetWorthSummary(summary.totalSavings, dailyChange, 'yesterday')
+  let savingsThisMonth = 0
+  let expensesThisMonth = 0
+
+  entries.forEach(entry => {
+    const entryDate = new Date(entry.date)
+    if (entryDate.getMonth() === currentMonth && entryDate.getFullYear() === currentYear) {
+      if (entry.type === 'deposit') {
+        savingsThisMonth += entry.amount
+      } else {
+        expensesThisMonth += entry.amount
+      }
+    }
+  })
 
   return (
     <div className="space-y-6">
@@ -90,54 +63,43 @@ export function FeedView({ summary, onAddInvestment, onAddExpense }: FeedViewPro
         <p className="text-sm text-muted-foreground">Your financial snapshot</p>
       </div>
 
-      {/* Net Worth Summary - Natural Language */}
-        <div
-          className={`transition-all duration-700 ease-out delay-100 ${
-            showSummary
-              ? 'opacity-100 translate-y-0'
-              : 'opacity-0 translate-y-8'
-          }`}
-        >
-          <div className="flex items-center gap-3">
-            {/* Icon */}
-            <div className="flex-shrink-0">
-              {netWorthSummary.icon === 'up' && (
-                <div className="p-2 rounded-full bg-green-500/10">
-                  <TrendingUp className="h-4 w-4 text-green-600 dark:text-green-400" />
-                </div>
-              )}
-              {netWorthSummary.icon === 'down' && (
-                <div className="p-2 rounded-full bg-red-500/10">
-                  <TrendingDown className="h-4 w-4 text-red-600 dark:text-red-400" />
-                </div>
-              )}
-              {netWorthSummary.icon === 'neutral' && (
-                <div className="p-2 rounded-full bg-muted/50">
-                  <Minus className="h-4 w-4 text-muted-foreground" />
-                </div>
-              )}
-            </div>
-
-            {/* Text Summary */}
-            <div className="flex-1">
-              <p className="text-base leading-relaxed text-foreground/90">
-                {netWorthSummary.text}
-              </p>
-            </div>
-        </div>
-      </div>
-
-      {/* Question */}
+      {/* Monthly Summary Cards */}
       <div
-        className={`transition-all duration-700 ease-out delay-200 ${
-          showQuestion
-            ? 'opacity-100 translate-y-0'
-            : 'opacity-0 translate-y-8'
+        className={`transition-all duration-700 ease-out ${
+          showCards ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
         }`}
       >
-        <p className="text-sm text-muted-foreground">
-          What would you like to do?
-        </p>
+        <div className="space-y-3">
+          {/* Saved This Month */}
+          <div className="p-4 rounded-xl bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-primary/10 border border-primary/20">
+                  <ArrowUpRight className="h-4 w-4 text-primary" />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground mb-0.5">Saved This Month</p>
+                  <p className="text-xl font-bold">{formatCurrency(savingsThisMonth)}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Expense This Month */}
+          <div className="p-4 rounded-xl bg-gradient-to-br from-red-500/10 via-red-500/5 to-transparent border border-red-500/20">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-red-500/10 border border-red-500/20">
+                  <ArrowDownRight className="h-4 w-4 text-red-600 dark:text-red-400" />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground mb-0.5">Expense This Month</p>
+                  <p className="text-xl font-bold">{formatCurrency(expensesThisMonth)}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Action Buttons */}

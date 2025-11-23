@@ -146,7 +146,7 @@ export function ExpenseTrackerFlow({ isOpen, onClose, onSubmit }: ExpenseTracker
                     onKeyDown={(e) => e.key === 'Enter' && handleAmountSubmit()}
                     placeholder="0"
                     autoFocus
-                    className="text-5xl font-bold bg-transparent border-none outline-none w-full max-w-xs text-center"
+                    className="text-5xl font-bold bg-transparent border-none outline-none w-full max-w-xs text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                 </div>
 
