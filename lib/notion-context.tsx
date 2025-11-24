@@ -10,6 +10,7 @@ interface NotionContextType {
   connect: (onSuccess?: (userName: string) => void) => void
   disconnect: () => void
   syncData: (entries: SavingsEntry[]) => Promise<void>
+  fetchData: () => Promise<SavingsEntry[]>
 }
 
 const NotionContext = createContext<NotionContextType | undefined>(undefined)
@@ -38,12 +39,17 @@ export function NotionProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const handleMessage = async (event: MessageEvent) => {
       if (event.data.type === 'notion-oauth-success') {
-        const { access_token } = event.data
+        const { access_token, workspace_id } = event.data
         if (access_token) {
           setAccessToken(access_token)
           setIsConnected(true)
           setIsConnecting(false)
           localStorage.setItem(STORAGE_KEYS.NOTION_ACCESS_TOKEN, access_token)
+
+          // Store workspace ID to identify user across devices
+          if (workspace_id) {
+            localStorage.setItem(STORAGE_KEYS.NOTION_WORKSPACE_ID, workspace_id)
+          }
 
           // Always call callback without name - onboarding will handle name collection
           if (onSuccessCallback) {
@@ -111,6 +117,7 @@ export function NotionProvider({ children }: { children: ReactNode }) {
     setIsConnected(false)
     localStorage.removeItem(STORAGE_KEYS.NOTION_ACCESS_TOKEN)
     localStorage.removeItem(STORAGE_KEYS.NOTION_DATABASE_ID)
+    localStorage.removeItem(STORAGE_KEYS.NOTION_WORKSPACE_ID)
   }
 
   const syncData = async (entries: SavingsEntry[]) => {
@@ -147,8 +154,46 @@ export function NotionProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  const fetchData = async (): Promise<SavingsEntry[]> => {
+    if (!isConnected || !accessToken) {
+      return []
+    }
+
+    try {
+      const databaseId = localStorage.getItem(STORAGE_KEYS.NOTION_DATABASE_ID)
+
+      // Call API route to fetch data from Notion
+      const response = await fetch('/api/notion/fetch', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          access_token: accessToken,
+          database_id: databaseId,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch data from Notion')
+      }
+
+      const data = await response.json()
+
+      // Store database ID if we found one
+      if (data.database_id) {
+        localStorage.setItem(STORAGE_KEYS.NOTION_DATABASE_ID, data.database_id)
+      }
+
+      return data.entries || []
+    } catch (error) {
+      console.error('Error fetching from Notion:', error)
+      return []
+    }
+  }
+
   return (
-    <NotionContext.Provider value={{ isConnected, isConnecting, connect, disconnect, syncData }}>
+    <NotionContext.Provider value={{ isConnected, isConnecting, connect, disconnect, syncData, fetchData }}>
       {children}
     </NotionContext.Provider>
   )

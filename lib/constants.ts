@@ -9,6 +9,7 @@ export const STORAGE_KEYS = {
   CURRENCY: 'currency',
   NOTION_ACCESS_TOKEN: 'notion_access_token',
   NOTION_DATABASE_ID: 'notion_database_id',
+  NOTION_WORKSPACE_ID: 'notion_workspace_id',
   USER_NAME: 'user_name',
   LOGIN_METHOD: 'login_method',
   LOGIN_TIME: 'login_time',
