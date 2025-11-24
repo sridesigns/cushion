@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Access token required' }, { status: 401 })
     }
 
-    let dbId = database_id
+    let dbId: string | null = database_id || null
 
     // If no database ID provided, search for the Cushion database
     if (!dbId) {
