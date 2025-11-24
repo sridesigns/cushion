@@ -161,7 +161,7 @@ async function clearDatabaseEntries(
   const pageIds: string[] = []
 
   while (hasMore) {
-    const queryResponse = await fetch(`https://api.notion.com/v1/databases/${databaseId}/query`, {
+    const queryResponse: Response = await fetch(`https://api.notion.com/v1/databases/${databaseId}/query`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
@@ -178,7 +178,7 @@ async function clearDatabaseEntries(
       throw new Error('Failed to query database for cleanup')
     }
 
-    const queryData = await queryResponse.json()
+    const queryData: any = await queryResponse.json()
     pageIds.push(...queryData.results.map((page: any) => page.id))
 
     hasMore = queryData.has_more

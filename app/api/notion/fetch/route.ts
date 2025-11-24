@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
 async function findCushionDatabase(accessToken: string): Promise<string | null> {
   try {
     // Search for databases with the name "Cushion - Savings Tracker"
-    const searchResponse = await fetch('https://api.notion.com/v1/search', {
+    const searchResponse: Response = await fetch('https://api.notion.com/v1/search', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
@@ -72,7 +72,7 @@ async function findCushionDatabase(accessToken: string): Promise<string | null> 
       return null
     }
 
-    const searchData = await searchResponse.json()
+    const searchData: any = await searchResponse.json()
 
     // Find the first database that matches our name
     const database = searchData.results.find((db: any) => {
@@ -96,7 +96,7 @@ async function fetchEntriesFromDatabase(
   let startCursor: string | undefined = undefined
 
   while (hasMore) {
-    const queryResponse = await fetch(`https://api.notion.com/v1/databases/${databaseId}/query`, {
+    const queryResponse: Response = await fetch(`https://api.notion.com/v1/databases/${databaseId}/query`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
@@ -113,7 +113,7 @@ async function fetchEntriesFromDatabase(
       throw new Error('Failed to query database')
     }
 
-    const queryData = await queryResponse.json()
+    const queryData: any = await queryResponse.json()
 
     // Convert Notion pages to SavingsEntry format
     for (const page of queryData.results) {
