@@ -57,7 +57,8 @@ export async function POST(request: NextRequest) {
       databaseId = await createNotionDatabase(access_token)
     }
 
-    // Sync entries to database
+    // Clear existing entries to avoid duplicates, then sync new data
+    await clearDatabaseEntries(access_token, databaseId)
     await syncEntriesToDatabase(access_token, databaseId, validatedEntries)
 
     return NextResponse.json({
@@ -148,6 +149,60 @@ async function createNotionDatabase(accessToken: string): Promise<string> {
 
   const createData = await createResponse.json()
   return createData.id
+}
+
+async function clearDatabaseEntries(
+  accessToken: string,
+  databaseId: string
+) {
+  // Query all pages in the database
+  let hasMore = true
+  let startCursor: string | undefined = undefined
+  const pageIds: string[] = []
+
+  while (hasMore) {
+    const queryResponse: Response = await fetch(`https://api.notion.com/v1/databases/${databaseId}/query`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Notion-Version': NOTION_API_VERSION,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        start_cursor: startCursor,
+        page_size: 100,
+      }),
+    })
+
+    if (!queryResponse.ok) {
+      throw new Error('Failed to query database for cleanup')
+    }
+
+    const queryData: any = await queryResponse.json()
+    pageIds.push(...queryData.results.map((page: any) => page.id))
+
+    hasMore = queryData.has_more
+    startCursor = queryData.next_cursor
+  }
+
+  // Archive all existing pages
+  if (pageIds.length > 0) {
+    await Promise.all(
+      pageIds.map(pageId =>
+        fetch(`https://api.notion.com/v1/pages/${pageId}`, {
+          method: 'PATCH',
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Notion-Version': NOTION_API_VERSION,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            archived: true,
+          }),
+        })
+      )
+    )
+  }
 }
 
 async function syncEntriesToDatabase(

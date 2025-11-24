@@ -14,13 +14,14 @@ import { DashboardView } from "@/components/dashboard-view"
 import { ActivityView } from "@/components/activity-view"
 import { ExpenseTrackerFlow } from "@/components/expense-tracker-flow"
 import { CurrencyProvider } from "@/lib/currency-context"
-import { NotionProvider } from "@/lib/notion-context"
+import { NotionProvider, useNotion } from "@/lib/notion-context"
 import { UserProvider, useUser } from "@/lib/user-context"
 import { STORAGE_KEYS } from "@/lib/constants"
 import type { SavingsEntry, SavingsSummary } from "@/lib/types"
 
 function HomeContent() {
-  const { isAuthenticated, isPending, needsOnboarding } = useUser()
+  const { isAuthenticated, isPending, needsOnboarding, loginMethod } = useUser()
+  const { isConnected, fetchData } = useNotion()
   const [entries, setEntries] = useState<SavingsEntry[]>([])
   const [showAddPanel, setShowAddPanel] = useState(false)
   const [addPanelType, setAddPanelType] = useState<'deposit' | 'withdrawal'>('deposit')
@@ -28,6 +29,7 @@ function HomeContent() {
   const [showSettings, setShowSettings] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
   const [isInitialLoading, setIsInitialLoading] = useState(true)
+  const [hasLoadedFromNotion, setHasLoadedFromNotion] = useState(false)
   const [summary, setSummary] = useState<SavingsSummary>({
     totalSavings: 0,
     thisMonth: 0,
@@ -42,6 +44,50 @@ function HomeContent() {
       setEntries(JSON.parse(savedEntries))
     }
   }, [])
+
+  // Fetch data from Notion when user logs in with Notion
+  useEffect(() => {
+    const loadFromNotion = async () => {
+      // Only fetch if:
+      // 1. User is authenticated with Notion
+      // 2. Notion is connected
+      // 3. We haven't already loaded from Notion this session
+      if (loginMethod === 'notion' && isConnected && !hasLoadedFromNotion) {
+        try {
+          const notionEntries = await fetchData()
+
+          if (notionEntries.length > 0) {
+            // Merge Notion data with local data
+            const localEntries = localStorage.getItem(STORAGE_KEYS.SAVINGS_ENTRIES)
+            const parsedLocalEntries: SavingsEntry[] = localEntries ? JSON.parse(localEntries) : []
+
+            // Create a map of Notion entries by ID
+            const notionEntriesMap = new Map(notionEntries.map(entry => [entry.id, entry]))
+
+            // Keep local entries that aren't in Notion, and merge with Notion entries
+            const mergedEntries = [
+              ...notionEntries,
+              ...parsedLocalEntries.filter(localEntry => !notionEntriesMap.has(localEntry.id))
+            ]
+
+            // Sort by date (newest first)
+            mergedEntries.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+
+            setEntries(mergedEntries)
+            setHasLoadedFromNotion(true)
+          } else {
+            // No Notion data, mark as loaded to avoid repeated fetches
+            setHasLoadedFromNotion(true)
+          }
+        } catch (error) {
+          console.error('Error loading data from Notion:', error)
+          setHasLoadedFromNotion(true)
+        }
+      }
+    }
+
+    loadFromNotion()
+  }, [loginMethod, isConnected, hasLoadedFromNotion, fetchData])
 
   const handleLoadComplete = () => {
     setIsInitialLoading(false)
