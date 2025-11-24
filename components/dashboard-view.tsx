@@ -216,6 +216,8 @@ export function DashboardView({ summary, entries }: DashboardViewProps) {
                   }}
                   formatter={(value: number) => `₹${value.toLocaleString('en-IN')}`}
                   labelStyle={{ color: 'hsl(var(--foreground))' }}
+                  itemStyle={{ color: 'hsl(var(--foreground))' }}
+                  cursor={{ fill: 'hsl(var(--muted))', opacity: 0.1 }}
                 />
                 <Legend
                   wrapperStyle={{ paddingTop: '10px' }}

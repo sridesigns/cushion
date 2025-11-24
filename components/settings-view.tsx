@@ -1,23 +1,43 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { Moon, Sun, Monitor, Database, CheckCircle2, Loader2, LogOut } from "lucide-react"
+import { Moon, Sun, Monitor, Database, CheckCircle2, Loader2, LogOut, Target } from "lucide-react"
 import { useTheme } from "next-themes"
 import { useCurrency, currencyConfig, type Currency } from "@/lib/currency-context"
 import { useNotion } from "@/lib/notion-context"
 import { useUser } from "@/lib/user-context"
+import { Input } from "@/components/ui/input"
 
 export function SettingsView() {
-  const { currency, setCurrency } = useCurrency()
+  const { currency, setCurrency, formatCurrency } = useCurrency()
   const { theme, setTheme } = useTheme()
   const { isConnected, isConnecting, connect, disconnect } = useNotion()
   const { userName, loginMethod, logout } = useUser()
   const [isNotionConfigured, setIsNotionConfigured] = useState(false)
+  const [monthlyBudget, setMonthlyBudget] = useState<string>('')
 
   // Check if Notion is configured
   useEffect(() => {
     setIsNotionConfigured(!!process.env.NEXT_PUBLIC_NOTION_CLIENT_ID)
   }, [])
+
+  // Load budget from localStorage
+  useEffect(() => {
+    const savedBudget = localStorage.getItem('monthlyBudget')
+    if (savedBudget) {
+      setMonthlyBudget(savedBudget)
+    }
+  }, [])
+
+  // Save budget to localStorage
+  const handleBudgetChange = (value: string) => {
+    setMonthlyBudget(value)
+    if (value) {
+      localStorage.setItem('monthlyBudget', value)
+    } else {
+      localStorage.removeItem('monthlyBudget')
+    }
+  }
 
   const handleCurrencyChange = (newCurrency: Currency) => {
     setCurrency(newCurrency)
@@ -112,6 +132,40 @@ export function SettingsView() {
               </button>
             )
           })}
+        </div>
+      </div>
+
+      {/* Monthly Budget Section */}
+      <div className="space-y-6">
+        <div className="space-y-1">
+          <h2 className="text-lg font-semibold">Monthly Budget</h2>
+          <p className="text-sm text-muted-foreground">Set your target spending limit for each month</p>
+        </div>
+
+        <div className="p-5 rounded-xl border border-border bg-muted/30">
+          <div className="flex items-center gap-4">
+            <div className="p-2.5 rounded-lg bg-primary/10 border border-primary/20">
+              <Target className="h-5 w-5 text-primary" />
+            </div>
+            <div className="flex-1">
+              <label htmlFor="budget" className="text-sm font-medium mb-2 block">
+                Monthly Budget ({currencyConfig[currency].code})
+              </label>
+              <Input
+                id="budget"
+                type="number"
+                value={monthlyBudget}
+                onChange={(e) => handleBudgetChange(e.target.value)}
+                placeholder="Enter your monthly budget"
+                className="h-12 text-base"
+              />
+              {monthlyBudget && (
+                <p className="text-xs text-muted-foreground mt-2">
+                  Your monthly budget is set to {formatCurrency(parseFloat(monthlyBudget))}
+                </p>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 

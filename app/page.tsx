@@ -154,7 +154,11 @@ function HomeContent() {
           <div className="max-w-[1600px] mx-auto">
             <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
               {/* Feed Section - 3 columns on xl screens */}
-              <div className="xl:col-span-3 space-y-6">
+              <div
+                className={`xl:col-span-3 space-y-6 transition-all duration-700 ${
+                  isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                }`}
+              >
                 <FeedView
                   summary={summary}
                   entries={entries}
@@ -169,12 +173,20 @@ function HomeContent() {
               </div>
 
               {/* Dashboard Section - 6 columns on xl screens */}
-              <div className="xl:col-span-6 space-y-6">
+              <div
+                className={`xl:col-span-6 space-y-6 transition-all duration-700 delay-100 ${
+                  isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                }`}
+              >
                 <DashboardView summary={summary} entries={entries} />
               </div>
 
               {/* Activity Section - 3 columns on xl screens */}
-              <div className="xl:col-span-3 space-y-6">
+              <div
+                className={`xl:col-span-3 space-y-6 transition-all duration-700 delay-200 ${
+                  isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                }`}
+              >
                 <ActivityView entries={entries} />
               </div>
             </div>

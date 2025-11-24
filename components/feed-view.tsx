@@ -57,6 +57,7 @@ export function FeedView({ summary, entries, onAddInvestment, onAddExpense }: Fe
   const [showNetWorth, setShowNetWorth] = useState(false)
   const [showCards, setShowCards] = useState(false)
   const [showActions, setShowActions] = useState(false)
+  const [monthlyBudget, setMonthlyBudget] = useState<number>(0)
 
   // Progressive reveal animation
   useEffect(() => {
@@ -70,6 +71,14 @@ export function FeedView({ summary, entries, onAddInvestment, onAddExpense }: Fe
       clearTimeout(timer2)
       clearTimeout(timer3)
       clearTimeout(timer4)
+    }
+  }, [])
+
+  // Load monthly budget
+  useEffect(() => {
+    const savedBudget = localStorage.getItem('monthlyBudget')
+    if (savedBudget) {
+      setMonthlyBudget(parseFloat(savedBudget))
     }
   }, [])
 
@@ -91,6 +100,11 @@ export function FeedView({ summary, entries, onAddInvestment, onAddExpense }: Fe
       }
     }
   })
+
+  // Calculate budget progress
+  const budgetRemaining = monthlyBudget - expensesThisMonth
+  const budgetPercentage = monthlyBudget > 0 ? (expensesThisMonth / monthlyBudget) * 100 : 0
+  const isOverBudget = budgetPercentage > 100
 
   // Calculate day-over-day change (mock for now - would compare with yesterday's data)
   const dailyChange = summary.thisMonth * 0.05 // Placeholder calculation
@@ -138,7 +152,7 @@ export function FeedView({ summary, entries, onAddInvestment, onAddExpense }: Fe
 
           {/* Text Summary */}
           <div className="flex-1">
-            <p className="text-base leading-relaxed text-foreground/90">
+            <p className="text-sm leading-relaxed text-foreground/90">
               {netWorthSummary.text}
             </p>
           </div>
@@ -181,6 +195,47 @@ export function FeedView({ summary, entries, onAddInvestment, onAddExpense }: Fe
               </div>
             </div>
           </div>
+
+          {/* Budget Progress (only show if budget is set) */}
+          {monthlyBudget > 0 && (
+            <div className={`p-4 rounded-xl border ${
+              isOverBudget
+                ? 'bg-gradient-to-br from-red-500/10 via-red-500/5 to-transparent border-red-500/20'
+                : 'bg-gradient-to-br from-blue-500/10 via-blue-500/5 to-transparent border-blue-500/20'
+            }`}>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs text-muted-foreground">Monthly Budget</p>
+                  <p className={`text-xs font-semibold ${
+                    isOverBudget ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400'
+                  }`}>
+                    {Math.min(budgetPercentage, 100).toFixed(0)}% used
+                  </p>
+                </div>
+
+                {/* Progress Bar */}
+                <div className="h-2 bg-muted rounded-full overflow-hidden">
+                  <div
+                    className={`h-full transition-all duration-500 ${
+                      isOverBudget ? 'bg-red-500' : 'bg-blue-500'
+                    }`}
+                    style={{ width: `${Math.min(budgetPercentage, 100)}%` }}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground">
+                    {isOverBudget ? 'Over by' : 'Remaining'}:
+                  </span>
+                  <span className={`font-semibold ${
+                    isOverBudget ? 'text-red-600 dark:text-red-400' : 'text-foreground'
+                  }`}>
+                    {formatCurrency(Math.abs(budgetRemaining))}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
