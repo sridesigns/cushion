@@ -9,8 +9,8 @@ interface NotionContextType {
   isConnecting: boolean
   connect: (onSuccess?: (userName: string) => void) => void
   disconnect: () => void
-  syncData: (entries: SavingsEntry[]) => Promise<void>
-  fetchData: () => Promise<SavingsEntry[]>
+  syncData: (entries: SavingsEntry[], userName?: string) => Promise<void>
+  fetchData: () => Promise<{ entries: SavingsEntry[], userName: string | null }>
 }
 
 const NotionContext = createContext<NotionContextType | undefined>(undefined)
@@ -120,7 +120,7 @@ export function NotionProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem(STORAGE_KEYS.NOTION_WORKSPACE_ID)
   }
 
-  const syncData = async (entries: SavingsEntry[]) => {
+  const syncData = async (entries: SavingsEntry[], userName?: string) => {
     if (!isConnected || !accessToken) {
       return
     }
@@ -135,6 +135,7 @@ export function NotionProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({
           access_token: accessToken,
           entries,
+          user_name: userName,
         }),
       })
 
@@ -154,9 +155,9 @@ export function NotionProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  const fetchData = async (): Promise<SavingsEntry[]> => {
+  const fetchData = async (): Promise<{ entries: SavingsEntry[], userName: string | null }> => {
     if (!isConnected || !accessToken) {
-      return []
+      return { entries: [], userName: null }
     }
 
     try {
@@ -185,10 +186,13 @@ export function NotionProvider({ children }: { children: ReactNode }) {
         localStorage.setItem(STORAGE_KEYS.NOTION_DATABASE_ID, data.database_id)
       }
 
-      return data.entries || []
+      return {
+        entries: data.entries || [],
+        userName: data.user_name || null,
+      }
     } catch (error) {
       console.error('Error fetching from Notion:', error)
-      return []
+      return { entries: [], userName: null }
     }
   }
 

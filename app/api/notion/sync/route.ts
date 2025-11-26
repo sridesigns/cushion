@@ -7,12 +7,13 @@ const NOTION_API_VERSION = '2022-06-28'
 interface NotionSyncRequest {
   access_token: string
   entries: SavingsEntry[]
+  user_name?: string
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body: NotionSyncRequest = await request.json()
-    const { access_token, entries } = body
+    const { access_token, entries, user_name } = body
 
     if (!access_token) {
       return NextResponse.json({ error: 'Access token required' }, { status: 401 })
@@ -52,9 +53,13 @@ export async function POST(request: NextRequest) {
 
     if (storedDbId) {
       databaseId = storedDbId
+      // Update database with user name if provided
+      if (user_name) {
+        await updateDatabaseMetadata(access_token, databaseId, user_name)
+      }
     } else {
       // Create a new database
-      databaseId = await createNotionDatabase(access_token)
+      databaseId = await createNotionDatabase(access_token, user_name)
     }
 
     // Clear existing entries to avoid duplicates, then sync new data
@@ -75,7 +80,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function createNotionDatabase(accessToken: string): Promise<string> {
+async function createNotionDatabase(accessToken: string, userName?: string): Promise<string> {
   // Search for parent page (use the first page in workspace)
   const searchResponse = await fetch('https://api.notion.com/v1/search', {
     method: 'POST',
@@ -113,6 +118,12 @@ async function createNotionDatabase(accessToken: string): Promise<string> {
           text: { content: 'Cushion - Savings Tracker' },
         },
       ],
+      description: userName ? [
+        {
+          type: 'text',
+          text: { content: `USER:${userName}` },
+        },
+      ] : [],
       properties: {
         'Entry': {
           title: {},
@@ -149,6 +160,34 @@ async function createNotionDatabase(accessToken: string): Promise<string> {
 
   const createData = await createResponse.json()
   return createData.id
+}
+
+async function updateDatabaseMetadata(
+  accessToken: string,
+  databaseId: string,
+  userName: string
+) {
+  try {
+    await fetch(`https://api.notion.com/v1/databases/${databaseId}`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Notion-Version': NOTION_API_VERSION,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        description: [
+          {
+            type: 'text',
+            text: { content: `USER:${userName}` },
+          },
+        ],
+      }),
+    })
+  } catch (error) {
+    console.error('Error updating database metadata:', error)
+    // Don't throw - this is not critical
+  }
 }
 
 async function clearDatabaseEntries(

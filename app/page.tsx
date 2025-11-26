@@ -20,7 +20,7 @@ import { STORAGE_KEYS } from "@/lib/constants"
 import type { SavingsEntry, SavingsSummary } from "@/lib/types"
 
 function HomeContent() {
-  const { isAuthenticated, isPending, needsOnboarding, loginMethod } = useUser()
+  const { isAuthenticated, isPending, needsOnboarding, loginMethod, setUserName, completeNotionLogin } = useUser()
   const { isConnected, fetchData } = useNotion()
   const [entries, setEntries] = useState<SavingsEntry[]>([])
   const [showAddPanel, setShowAddPanel] = useState(false)
@@ -54,7 +54,13 @@ function HomeContent() {
       // 3. We haven't already loaded from Notion this session
       if (loginMethod === 'notion' && isConnected && !hasLoadedFromNotion) {
         try {
-          const notionEntries = await fetchData()
+          const { entries: notionEntries, userName: notionUserName } = await fetchData()
+
+          // If we found a user name in Notion, use it to complete login
+          if (notionUserName) {
+            setUserName(notionUserName)
+            completeNotionLogin(notionUserName)
+          }
 
           if (notionEntries.length > 0) {
             // Merge Notion data with local data
@@ -87,7 +93,7 @@ function HomeContent() {
     }
 
     loadFromNotion()
-  }, [loginMethod, isConnected, hasLoadedFromNotion, fetchData])
+  }, [loginMethod, isConnected, hasLoadedFromNotion, fetchData, setUserName, completeNotionLogin])
 
   const handleLoadComplete = () => {
     setIsInitialLoading(false)

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { useNotion } from '@/lib/notion-context'
+import { useUser } from '@/lib/user-context'
 import type { SavingsEntry } from '@/lib/types'
 
 interface AutoSyncProps {
@@ -10,6 +11,7 @@ interface AutoSyncProps {
 
 export function AutoSync({ entries }: AutoSyncProps) {
   const { isConnected, syncData } = useNotion()
+  const { userName } = useUser()
   const lastSyncRef = useRef<string>('')
 
   useEffect(() => {
@@ -19,7 +21,7 @@ export function AutoSync({ entries }: AutoSyncProps) {
     if (isConnected && entriesHash !== lastSyncRef.current) {
       // Debounce sync by 1 second
       const timer = setTimeout(() => {
-        syncData(entries).catch(error => {
+        syncData(entries, userName || undefined).catch(error => {
           console.error('Auto-sync failed:', error)
         })
         lastSyncRef.current = entriesHash
@@ -27,7 +29,7 @@ export function AutoSync({ entries }: AutoSyncProps) {
 
       return () => clearTimeout(timer)
     }
-  }, [entries, isConnected, syncData])
+  }, [entries, isConnected, syncData, userName])
 
   return null
 }

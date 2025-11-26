@@ -32,6 +32,9 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Fetch database metadata to get user name
+    const userName = await fetchUserNameFromDatabase(access_token, dbId)
+
     // Fetch all entries from the database
     const entries = await fetchEntriesFromDatabase(access_token, dbId)
 
@@ -39,6 +42,7 @@ export async function POST(request: NextRequest) {
       success: true,
       entries,
       database_id: dbId,
+      user_name: userName,
     })
   } catch (error) {
     console.error('Fetch error:', error)
@@ -83,6 +87,38 @@ async function findCushionDatabase(accessToken: string): Promise<string | null> 
     return database?.id || null
   } catch (error) {
     console.error('Error finding database:', error)
+    return null
+  }
+}
+
+async function fetchUserNameFromDatabase(
+  accessToken: string,
+  databaseId: string
+): Promise<string | null> {
+  try {
+    const response: Response = await fetch(`https://api.notion.com/v1/databases/${databaseId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Notion-Version': NOTION_API_VERSION,
+      },
+    })
+
+    if (!response.ok) {
+      return null
+    }
+
+    const database: any = await response.json()
+    const description = database.description?.[0]?.plain_text || ''
+
+    // Extract user name from description (format: "USER:Name")
+    if (description.startsWith('USER:')) {
+      return description.substring(5)
+    }
+
+    return null
+  } catch (error) {
+    console.error('Error fetching user name:', error)
     return null
   }
 }
